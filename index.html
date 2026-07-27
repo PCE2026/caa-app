@@ -19,7 +19,6 @@
       --colab-color: #065f46;
       --colab-bg: #d1fae5;
       --danger: #ef4444;
-      --warning: #f59e0b;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
@@ -77,6 +76,9 @@
     }
     input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 
+    .grid-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1rem; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
     .btn {
       background: var(--primary);
       color: white;
@@ -88,8 +90,6 @@
       transition: background 0.2s;
     }
     .btn:hover { background: var(--primary-dark); }
-    .btn-secondary { background: #e2e8f0; color: var(--text-main); }
-    .btn-secondary:hover { background: #cbd5e1; }
 
     .need-card {
       border: 1px solid var(--border-color);
@@ -168,8 +168,10 @@
       </div>
 
       <div class="card">
-        <h2>2. Seleção do Apoio / Tarefa Ativa</h2>
-        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">Escolha uma das necessidades pendentes registadas pela coordenação.</p>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h2>2. Seleção do Apoio / Tarefa Ativa</h2>
+          <button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="fetchNeeds()">🔄 Atualizar Lista</button>
+        </div>
         
         <div class="filters">
           <button class="filter-btn active" onclick="filterNeeds('all', this)">Todos</button>
@@ -188,6 +190,7 @@
         <h2>Registar Nova Necessidade de Apoio</h2>
         <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">Preencha o formulário para adicionar um novo pedido à fila dos professores.</p>
         <form id="newNeedForm" onsubmit="handleNewNeed(event)">
+          
           <div class="form-group">
             <label for="tipoValência">Valência / Área da Lei (DL 54/2018):</label>
             <select id="tipoValência" required>
@@ -199,24 +202,44 @@
             </select>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <!-- DADOS DO ALUNO / SOLICITANTE SEPARADOS -->
+          <div class="grid-3">
             <div class="form-group">
-              <label for="entidadeAlvo">Aluno(a), Turma ou DT Solicitante:</label>
-              <input type="text" id="entidadeAlvo" placeholder="Ex: Matilde Costa (7.º B) ou DT 8.º C" required>
+              <label for="nomeAluno">Nome do Aluno / Solicitante:</label>
+              <input type="text" id="nomeAluno" placeholder="Ex: Matilde Costa" required>
             </div>
             <div class="form-group">
-              <label for="localizacao">Localização no CAA / Sala:</label>
-              <input type="text" id="localizacao" placeholder="Ex: Mesa 2 / Sala 12 (Coadjuvação)" required>
+              <label for="anoEscolaridade">Ano:</label>
+              <select id="anoEscolaridade" required>
+                <option value="5.º Ano">5.º Ano</option>
+                <option value="6.º Ano">6.º Ano</option>
+                <option value="7.º Ano">7.º Ano</option>
+                <option value="8.º Ano">8.º Ano</option>
+                <option value="9.º Ano">9.º Ano</option>
+                <option value="10.º Ano">10.º Ano</option>
+                <option value="11.º Ano">11.º Ano</option>
+                <option value="12.º Ano">12.º Ano</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="turmaAluno">Turma:</label>
+              <input type="text" id="turmaAluno" placeholder="Ex: B" required style="text-transform: uppercase;">
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="prioridade">Nível de Prioridade:</label>
-            <select id="prioridade">
-              <option value="Normal">Normal</option>
-              <option value="Média">Média</option>
-              <option value="Alta">Alta</option>
-            </select>
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="localizacao">Localização no CAA / Sala:</label>
+              <input type="text" id="localizacao" placeholder="Ex: Mesa 2 / Sala 12" required>
+            </div>
+            <div class="form-group">
+              <label for="prioridade">Nível de Prioridade:</label>
+              <select id="prioridade">
+                <option value="Normal">Normal</option>
+                <option value="Média">Média</option>
+                <option value="Alta">Alta</option>
+              </select>
+            </div>
           </div>
 
           <div class="form-group">
@@ -233,7 +256,6 @@
   <div id="toast" class="toast">Sumário copiado e apoio registado com sucesso!</div>
 
   <script>
-    // URL do teu Google Apps Script
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTM3Ps2cD5SSNYhNkxMbEWDMPWfOikrVKp48lhY9HVHa7nbM7J0nsg06yial7jZ_zz/exec";
 
     let needsData = [];
@@ -250,6 +272,7 @@
       if(tab === 'professores') {
         document.querySelectorAll('.nav-tab')[0].classList.add('active');
         document.getElementById('view-professores').classList.add('active');
+        fetchNeeds(); // Atualiza a lista ao mudar de aba
       } else {
         document.querySelectorAll('.nav-tab')[1].classList.add('active');
         document.getElementById('view-gestao').classList.add('active');
@@ -268,7 +291,7 @@
         loading.style.display = 'none';
         renderNeeds();
       } catch (err) {
-        loading.innerHTML = 'Erro ao carregar dados. Verifique a ligação.';
+        loading.innerHTML = 'Erro ao carregar dados do Google Sheets. Verifique a ligação.';
       }
     }
 
@@ -283,21 +306,22 @@
       const container = document.getElementById('needsContainer');
       container.innerHTML = '';
 
+      // Filtra apenas apoios pendentes (insensível a maiúsculas)
       const filtered = needsData.filter(item => {
-        if (item.estado === 'Em Execução' || item.estado === 'Concluído') return false;
+        const estado = (item.estado || '').toString().trim().toLowerCase();
+        if (estado === 'em execução' || estado === 'concluído') return false;
         if (currentFilter === 'all') return true;
         return item.tipoValência.includes(currentFilter);
       });
 
       if (filtered.length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Não existem apoios pendentes de momento.</p>';
+        container.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Não existem apoios pendentes de momento no Google Sheets.</p>';
         return;
       }
 
       filtered.forEach(item => {
         const isHigh = item.prioridade === 'Alta';
         const isColab = item.tipoValência.includes('Apoio Colaborativo');
-        
         const summaryText = generateDraftSummary(item.tipoValência, item.entidadeAlvo, item.descricaoObjetivos);
 
         const card = document.createElement('div');
@@ -360,10 +384,9 @@
         });
         const result = await res.json();
 
-        // Copiar o sumário para a área de transferência
         navigator.clipboard.writeText(result.resultado.sumarioGerado);
         showToast("Sumário copiado! Pode colar no Inovar Alunos.");
-        fetchNeeds(); // Atualizar lista
+        fetchNeeds();
       } catch (err) {
         alert("Erro ao registar o apoio. Verifique a ligação.");
       }
@@ -375,11 +398,18 @@
       btn.innerText = "A guardar...";
       btn.disabled = true;
 
+      const nome = document.getElementById('nomeAluno').value.trim();
+      const ano = document.getElementById('anoEscolaridade').value;
+      const turma = document.getElementById('turmaAluno').value.trim().toUpperCase();
+      
+      // Concatena o nome com o Ano e Turma de forma padronizada
+      const entidadeFormatada = `${nome} (${ano} ${turma})`;
+
       const payload = {
         action: "novaNecessidade",
         payload: {
           tipoValência: document.getElementById('tipoValência').value,
-          entidadeAlvo: document.getElementById('entidadeAlvo').value,
+          entidadeAlvo: entidadeFormatada,
           localizacao: document.getElementById('localizacao').value,
           prioridade: document.getElementById('prioridade').value,
           descricaoObjetivos: document.getElementById('descricaoObjetivos').value
@@ -393,7 +423,6 @@
         });
         showToast("Necessidade registada com sucesso no Sheets!");
         document.getElementById('newNeedForm').reset();
-        fetchNeeds();
         switchTab('professores');
       } catch (err) {
         alert("Erro ao guardar a nova necessidade.");
