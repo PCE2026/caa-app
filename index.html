@@ -76,7 +76,6 @@
     }
     input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 
-    .grid-4 { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 1rem; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
@@ -339,10 +338,9 @@
       fetchNeeds();
     };
 
-    // Deteta automaticamente o Dia e o Tempo Letivo atual
     function autoDetectSchedule() {
       const now = new Date();
-      const day = now.getDay(); // 0 = Dom, 1 = Seg, 2 = Ter, 3 = Qua, 4 = Qui, 5 = Sex, 6 = Sáb
+      const day = now.getDay();
       
       const daysMap = {
         1: "2.ª feira",
@@ -355,10 +353,9 @@
       if (daysMap[day]) {
         document.getElementById('filterDia').value = daysMap[day];
       } else {
-        document.getElementById('filterDia').value = "Todos"; // Fim de semana
+        document.getElementById('filterDia').value = "Todos";
       }
 
-      // Detetar tempo letivo com base na hora atual
       const minutes = now.getHours() * 60 + now.getMinutes();
       
       let tempo = "Todos";
@@ -420,18 +417,12 @@
       const filterDia = document.getElementById('filterDia').value;
       const filterTempo = document.getElementById('filterTempo').value;
 
-      // Filtra por Estado (Pendente), Tipo, Dia e Tempo Letivo
       const filtered = needsData.filter(item => {
         const estado = (item.estado || '').toString().trim().toLowerCase();
         if (estado === 'em execução' || estado === 'concluído') return false;
         
-        // Filtro por Tipo de Valência
         if (currentFilter !== 'all' && !item.tipoValência.includes(currentFilter)) return false;
-
-        // Filtro por Dia da Semana
         if (filterDia !== 'Todos' && item.diaSemana && item.diaSemana !== filterDia) return false;
-
-        // Filtro por Tempo Letivo
         if (filterTempo !== 'Todos' && item.tempoLetivo && item.tempoLetivo !== filterTempo) return false;
 
         return true;
@@ -497,7 +488,8 @@
           nomeProfessor: profName,
           tipoValência: valencia,
           entidadeAlvo: entidade,
-          descricaoObjetivos: objetivos
+          descricaoObjetivos: objetivos,
+          dataAssumido: new Date().toLocaleString('pt-PT')
         }
       };
 
@@ -524,7 +516,6 @@
 
       const nome = document.getElementById('nomeAluno').value.trim();
       const ano = document.getElementById('anoEscolaridade').value;
-      // Garante que a Turma é guardada SEMPRE em maiúsculas
       const turma = document.getElementById('turmaAluno').value.trim().toUpperCase();
       
       const entidadeFormatada = `${nome} (${ano} ${turma})`;
@@ -532,6 +523,7 @@
       const payload = {
         action: "novaNecessidade",
         payload: {
+          dataRegisto: new Date().toLocaleString('pt-PT'),
           tipoValência: document.getElementById('tipoValência').value,
           diaSemana: document.getElementById('diaSemana').value,
           tempoLetivo: document.getElementById('tempoLetivo').value,
