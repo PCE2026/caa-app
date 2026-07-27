@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Centro de Apoio à Aprendizagem (CAA) - DL 54/2018</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg-slate: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --dl54-color: #1e40af;
+      --dl54-bg: #dbeafe;
+      --colab-color: #065f46;
+      --colab-bg: #d1fae5;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background-color: var(--bg-slate); color: var(--text-main); line-height: 1.5; padding-bottom: 40px; }
+
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .brand h1 { font-size: 1.25rem; color: var(--primary-dark); font-weight: 700; }
+    .brand p { font-size: 0.85rem; color: var(--text-muted); }
+
+    .nav-tabs { display: flex; gap: 0.5rem; background: #f1f5f9; padding: 0.25rem; border-radius: 8px; }
+    .nav-tab {
+      padding: 0.5rem 1rem;
+      border: none;
+      background: transparent;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .nav-tab.active { background: white; color: var(--primary); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+
+    main { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+
+    .view-panel { display: none; }
+    .view-panel.active { display: block; }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    .form-group { margin-bottom: 1rem; }
+    label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.4rem; }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.65rem 1.25rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: var(--primary-dark); }
+    .btn-secondary { background: #e2e8f0; color: var(--text-main); }
+    .btn-secondary:hover { background: #cbd5e1; }
+
+    .need-card {
+      border: 1px solid var(--border-color);
+      border-left: 5px solid var(--primary);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      background: white;
+      margin-bottom: 1rem;
+    }
+    .need-card.high-priority { border-left-color: var(--danger); }
+    .need-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 50px;
+    }
+    .badge-dl54 { background: var(--dl54-bg); color: var(--dl54-color); }
+    .badge-colab { background: var(--colab-bg); color: var(--colab-color); }
+    .badge-priority { background: #fee2e2; color: #991b1b; }
+
+    .summary-box {
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      padding: 0.75rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      color: #334155;
+      margin: 0.75rem 0;
+      font-family: monospace;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #10b981;
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      display: none;
+      z-index: 1000;
+    }
+
+    .filters { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+    .filter-btn { padding: 0.4rem 0.8rem; font-size: 0.8rem; border-radius: 50px; border: 1px solid var(--border-color); background: white; cursor: pointer; }
+    .filter-btn.active { background: var(--text-main); color: white; border-color: var(--text-main); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <h1>Centro de Apoio à Aprendizagem (CAA)</h1>
+      <p>Plataforma de Gestão e Triagem • DL 54/2018</p>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab('professores')">Entrada do Professor</button>
+      <button class="nav-tab" onclick="switchTab('gestao')">Gestão / Coordenação</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- VISTA DO PROFESSOR -->
+    <div id="view-professores" class="view-panel active">
+      <div class="card">
+        <h2>1. Identificação do Docente</h2>
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">Indique o seu nome para assumir e registar o apoio no CAA.</p>
+        <div class="form-group">
+          <label for="profName">Nome do Professor com Horas no CAA:</label>
+          <input type="text" id="profName" placeholder="Ex: Prof. António Silva">
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>2. Seleção do Apoio / Tarefa Ativa</h2>
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">Escolha uma das necessidades pendentes registadas pela coordenação.</p>
+        
+        <div class="filters">
+          <button class="filter-btn active" onclick="filterNeeds('all', this)">Todos</button>
+          <button class="filter-btn" onclick="filterNeeds('DL 54', this)">Apenas DL 54</button>
+          <button class="filter-btn" onclick="filterNeeds('Apoio Colaborativo', this)">Coadjuvação & Cidadania</button>
+        </div>
+
+        <div id="loading" style="text-align: center; padding: 2rem; color: var(--text-muted);">A carregar dados do Google Sheets...</div>
+        <div id="needsContainer"></div>
+      </div>
+    </div>
+
+    <!-- VISTA DA GESTÃO -->
+    <div id="view-gestao" class="view-panel">
+      <div class="card">
+        <h2>Registar Nova Necessidade de Apoio</h2>
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">Preencha o formulário para adicionar um novo pedido à fila dos professores.</p>
+        <form id="newNeedForm" onsubmit="handleNewNeed(event)">
+          <div class="form-group">
+            <label for="tipoValência">Valência / Área da Lei (DL 54/2018):</label>
+            <select id="tipoValência" required>
+              <option value="DL 54 (Art.º 13.º, n.º 3, a) - Reforço Pedagógico Acrescido">DL 54 (Art.º 13.º, n.º 3, a) - Reforço Pedagógico Acrescido</option>
+              <option value="DL 54 (Art.º 13.º, n.º 3, c) - Adaptação de Materiais e Acessibilidade">DL 54 (Art.º 13.º, n.º 3, c) - Adaptação de Materiais e Acessibilidade</option>
+              <option value="DL 54 (Art.º 13.º, n.º 3, d) - Autonomia, Autorregulação e Socialização">DL 54 (Art.º 13.º, n.º 3, d) - Autonomia, Autorregulação e Socialização</option>
+              <option value="DL 54 (Art.º 13.º, n.º 3, f) - Transição para a Vida Ativa (PIT/PVA)">DL 54 (Art.º 13.º, n.º 3, f) - Transição para a Vida Ativa (PIT/PVA)</option>
+              <option value="DL 54 (Art.º 13.º, n.º 3, b) - Apoio Colaborativo aos Docentes (Coadjuvação / Cidadania / DT)">DL 54 (Art.º 13.º, n.º 3, b) - Apoio Colaborativo aos Docentes (Coadjuvação / Cidadania / DT)</option>
+            </select>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label for="entidadeAlvo">Aluno(a), Turma ou DT Solicitante:</label>
+              <input type="text" id="entidadeAlvo" placeholder="Ex: Matilde Costa (7.º B) ou DT 8.º C" required>
+            </div>
+            <div class="form-group">
+              <label for="localizacao">Localização no CAA / Sala:</label>
+              <input type="text" id="localizacao" placeholder="Ex: Mesa 2 / Sala 12 (Coadjuvação)" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="prioridade">Nível de Prioridade:</label>
+            <select id="prioridade">
+              <option value="Normal">Normal</option>
+              <option value="Média">Média</option>
+              <option value="Alta">Alta</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="descricaoObjetivos">Instruções e Objetivos Pedagógicos:</label>
+            <textarea id="descricaoObjetivos" rows="3" placeholder="Escreva os objetivos breves para orientar o professor..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn" id="btnSubmitForm">Registar Necessidade</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast" class="toast">Sumário copiado e apoio registado com sucesso!</div>
+
+  <script>
+    // URL do teu Google Apps Script
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTM3Ps2cD5SSNYhNkxMbEWDMPWfOikrVKp48lhY9HVHa7nbM7J0nsg06yial7jZ_zz/exec";
+
+    let needsData = [];
+    let currentFilter = 'all';
+
+    window.onload = function() {
+      fetchNeeds();
+    };
+
+    function switchTab(tab) {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.view-panel').forEach(v => v.classList.remove('active'));
+      
+      if(tab === 'professores') {
+        document.querySelectorAll('.nav-tab')[0].classList.add('active');
+        document.getElementById('view-professores').classList.add('active');
+      } else {
+        document.querySelectorAll('.nav-tab')[1].classList.add('active');
+        document.getElementById('view-gestao').classList.add('active');
+      }
+    }
+
+    async function fetchNeeds() {
+      const container = document.getElementById('needsContainer');
+      const loading = document.getElementById('loading');
+      loading.style.display = 'block';
+      container.innerHTML = '';
+
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getNecessidades`);
+        needsData = await res.json();
+        loading.style.display = 'none';
+        renderNeeds();
+      } catch (err) {
+        loading.innerHTML = 'Erro ao carregar dados. Verifique a ligação.';
+      }
+    }
+
+    function filterNeeds(type, btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = type;
+      renderNeeds();
+    }
+
+    function renderNeeds() {
+      const container = document.getElementById('needsContainer');
+      container.innerHTML = '';
+
+      const filtered = needsData.filter(item => {
+        if (item.estado === 'Em Execução' || item.estado === 'Concluído') return false;
+        if (currentFilter === 'all') return true;
+        return item.tipoValência.includes(currentFilter);
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Não existem apoios pendentes de momento.</p>';
+        return;
+      }
+
+      filtered.forEach(item => {
+        const isHigh = item.prioridade === 'Alta';
+        const isColab = item.tipoValência.includes('Apoio Colaborativo');
+        
+        const summaryText = generateDraftSummary(item.tipoValência, item.entidadeAlvo, item.descricaoObjetivos);
+
+        const card = document.createElement('div');
+        card.className = `need-card ${isHigh ? 'high-priority' : ''}`;
+        card.innerHTML = `
+          <div class="need-header">
+            <div>
+              <span class="badge ${isColab ? 'badge-colab' : 'badge-dl54'}">${isColab ? 'Apoio Colaborativo / Cidadania' : 'DL 54/2018'}</span>
+              ${isHigh ? '<span class="badge badge-priority">Prioridade Alta</span>' : ''}
+            </div>
+            <span style="font-size: 0.8rem; color: var(--text-muted);"><b>Local:</b> ${item.localizacao}</span>
+          </div>
+          <h3 style="font-size: 1.05rem; margin: 0.4rem 0;">${item.entidadeAlvo}</h3>
+          <p style="font-size: 0.875rem; color: #334155;">${item.descricaoObjetivos}</p>
+          <div class="summary-box" id="sum-${item.idPedido}">${summaryText}</div>
+          <button class="btn" onclick="takeSupport('${item.idPedido}', ${item.linhaExcel}, '${encodeURIComponent(item.tipoValência)}', '${encodeURIComponent(item.entidadeAlvo)}', '${encodeURIComponent(item.descricaoObjetivos)}')">Assumir Apoio e Copiar Sumário</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function generateDraftSummary(valencia, entidade, objetivos) {
+      if (valencia.includes("Reforço Pedagógico")) {
+        return `[Apoio CAA - Art.º 13.º, n.º 3, al. a)] Apoio pedagógico prestado ao aluno/turma ${entidade}. Consolidação de conteúdos e trabalho orientado focado em: ${objetivos}.`;
+      } else if (valencia.includes("Apoio Colaborativo")) {
+        return `[Apoio CAA - Art.º 13.º, n.º 3, al. b)] Apoio colaborativo / coadjuvação em articulação com o docente/DT da turma ${entidade}. Âmbito: ${objetivos}.`;
+      } else {
+        return `[Apoio CAA - DL 54/2018] Apoio pedagógico no CAA prestado a ${entidade}. Objetivos: ${objetivos}.`;
+      }
+    }
+
+    async function takeSupport(idPedido, linhaExcel, encodedValencia, encodedEntidade, encodedObjetivos) {
+      const profName = document.getElementById('profName').value.trim();
+      if (!profName) {
+        alert("Por favor, preencha o seu nome no topo da página antes de assumir o apoio.");
+        document.getElementById('profName').focus();
+        return;
+      }
+
+      const valencia = decodeURIComponent(encodedValencia);
+      const entidade = decodeURIComponent(encodedEntidade);
+      const objetivos = decodeURIComponent(encodedObjetivos);
+
+      const payload = {
+        action: "assumirApoio",
+        payload: {
+          idPedido: idPedido,
+          linhaExcel: linhaExcel,
+          nomeProfessor: profName,
+          tipoValência: valencia,
+          entidadeAlvo: entidade,
+          descricaoObjetivos: objetivos
+        }
+      };
+
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+
+        // Copiar o sumário para a área de transferência
+        navigator.clipboard.writeText(result.resultado.sumarioGerado);
+        showToast("Sumário copiado! Pode colar no Inovar Alunos.");
+        fetchNeeds(); // Atualizar lista
+      } catch (err) {
+        alert("Erro ao registar o apoio. Verifique a ligação.");
+      }
+    }
+
+    async function handleNewNeed(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmitForm');
+      btn.innerText = "A guardar...";
+      btn.disabled = true;
+
+      const payload = {
+        action: "novaNecessidade",
+        payload: {
+          tipoValência: document.getElementById('tipoValência').value,
+          entidadeAlvo: document.getElementById('entidadeAlvo').value,
+          localizacao: document.getElementById('localizacao').value,
+          prioridade: document.getElementById('prioridade').value,
+          descricaoObjetivos: document.getElementById('descricaoObjetivos').value
+        }
+      };
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        showToast("Necessidade registada com sucesso no Sheets!");
+        document.getElementById('newNeedForm').reset();
+        fetchNeeds();
+        switchTab('professores');
+      } catch (err) {
+        alert("Erro ao guardar a nova necessidade.");
+      } finally {
+        btn.innerText = "Registar Necessidade";
+        btn.disabled = false;
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 3500);
+    }
+  </script>
+</body>
+</html>
