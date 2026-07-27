@@ -76,7 +76,7 @@
     }
     input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 1rem; }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
     .btn {
@@ -274,14 +274,10 @@
             </div>
           </div>
 
-          <!-- DADOS DO ALUNO / SOLICITANTE -->
+          <!-- DADOS DA ENTIDADE ALVO (ANO, TURMA E ALUNO/PROFESSOR) -->
           <div class="grid-3">
             <div class="form-group">
-              <label for="nomeAluno">Nome do Aluno / Solicitante:</label>
-              <input type="text" id="nomeAluno" placeholder="Ex: Matilde Costa" required>
-            </div>
-            <div class="form-group">
-              <label for="anoEscolaridade">Ano:</label>
+              <label for="anoEscolaridade">Ano de Escolaridade:</label>
               <select id="anoEscolaridade" required>
                 <option value="5.º Ano">5.º Ano</option>
                 <option value="6.º Ano">6.º Ano</option>
@@ -296,6 +292,10 @@
             <div class="form-group">
               <label for="turmaAluno">Turma:</label>
               <input type="text" id="turmaAluno" placeholder="Ex: B" required oninput="this.value = this.value.toUpperCase()">
+            </div>
+            <div class="form-group">
+              <label for="nomeDetalhe">Aluno / Professor / Disciplina:</label>
+              <input type="text" id="nomeDetalhe" placeholder="Ex: Matilde Costa  OU  Prof. Silva (Português)">
             </div>
           </div>
 
@@ -460,11 +460,11 @@
 
     function generateDraftSummary(valencia, entidade, objetivos) {
       if (valencia.includes("Reforço Pedagógico")) {
-        return `[Apoio CAA - Art.º 13.º, n.º 3, al. a)] Apoio pedagógico prestado ao aluno/turma ${entidade}. Consolidação de conteúdos e trabalho orientado focado em: ${objetivos}.`;
+        return `[Apoio CAA - Art.º 13.º, n.º 3, al. a)] Apoio pedagógico prestado a: ${entidade}. Consolidação de conteúdos e trabalho orientado focado em: ${objetivos}.`;
       } else if (valencia.includes("Apoio Colaborativo")) {
-        return `[Apoio CAA - Art.º 13.º, n.º 3, al. b)] Apoio colaborativo / coadjuvação em articulação com o docente/DT da turma ${entidade}. Âmbito: ${objetivos}.`;
+        return `[Apoio CAA - Art.º 13.º, n.º 3, al. b)] Apoio colaborativo / coadjuvação em articulação com: ${entidade}. Âmbito: ${objetivos}.`;
       } else {
-        return `[Apoio CAA - DL 54/2018] Apoio pedagógico no CAA prestado a ${entidade}. Objetivos: ${objetivos}.`;
+        return `[Apoio CAA - DL 54/2018] Apoio pedagógico no CAA prestado a: ${entidade}. Objetivos: ${objetivos}.`;
       }
     }
 
@@ -514,11 +514,15 @@
       btn.innerText = "A guardar...";
       btn.disabled = true;
 
-      const nome = document.getElementById('nomeAluno').value.trim();
       const ano = document.getElementById('anoEscolaridade').value;
       const turma = document.getElementById('turmaAluno').value.trim().toUpperCase();
+      const detalhe = document.getElementById('nomeDetalhe').value.trim();
       
-      const entidadeFormatada = `${nome} (${ano} ${turma})`;
+      // Formata a Entidade Alvo (Ano + Turma + Detalhe Opcional)
+      let entidadeFormatada = `${ano} ${turma}`;
+      if (detalhe) {
+        entidadeFormatada += ` - ${detalhe}`;
+      }
 
       const payload = {
         action: "novaNecessidade",
