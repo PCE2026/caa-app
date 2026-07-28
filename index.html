@@ -230,13 +230,33 @@
         </div>
 
         <div class="form-group">
-          <label>Tempo Letivo:</label>
-          <input type="text" id="tempoLetivo" placeholder="Ex: 3º Tempo / 10h00 - 10h45" required>
+          <label>Tempo Letivo / Horário:</label>
+          <select id="tempoLetivo" required>
+            <option value="1º Tempo (08:25 - 09:15)">1º Tempo (08:25 - 09:15)</option>
+            <option value="2º Tempo (09:25 - 10:15)">2º Tempo (09:25 - 10:15)</option>
+            <option value="3º Tempo (10:30 - 11:20)">3º Tempo (10:30 - 11:20)</option>
+            <option value="4º Tempo (11:30 - 12:20)">4º Tempo (11:30 - 12:20)</option>
+            <option value="5º Tempo (12:25 - 13:15)">5º Tempo (12:25 - 13:15)</option>
+            <option value="6º Tempo (13:30 - 14:20)">6º Tempo (13:30 - 14:20)</option>
+            <option value="7º Tempo (14:25 - 15:15)">7º Tempo (14:25 - 15:15)</option>
+            <option value="8º Tempo (15:30 - 16:20)">8º Tempo (15:30 - 16:20)</option>
+            <option value="9º Tempo (16:25 - 17:15)">9º Tempo (16:25 - 17:15)</option>
+          </select>
         </div>
 
         <div class="form-group">
-          <label>Entidade Alvo (Ano / Turma / Alunos):</label>
-          <input type="text" id="entidadeAlvo" placeholder="Ex: 7ºA / Grupo X" required>
+          <label>Ano:</label>
+          <input type="text" id="ano" placeholder="Ex: 7º Ano" required>
+        </div>
+
+        <div class="form-group">
+          <label>Turma:</label>
+          <input type="text" id="turma" placeholder="Ex: Turma A" required>
+        </div>
+
+        <div class="form-group">
+          <label>Alunos / Grupo:</label>
+          <input type="text" id="alunos" placeholder="Ex: Grupo de Apoio X / Nome dos alunos" required>
         </div>
 
         <div class="form-group">
@@ -269,7 +289,7 @@
   </div>
 
   <script>
-    // Substitui pelo teu URL do Apps Script
+    // URL do teu Google Apps Script
     const SCRIPT_URL = "SUBS_AQUI_O_TEU_URL_DO_APPS_SCRIPT";
 
     function switchTab(tabId) {
@@ -301,7 +321,7 @@
         data.forEach(item => {
           const isPendente = item.estado === "Pendente";
           
-          // Texto formatado para o sumário
+          // Formatação do texto para o sumário
           const textoSumario = `Apoio CAA (${item.tipoValência}) - ${item.entidadeAlvo}. Objetivos: ${item.descricaoObjetivos}. Local: ${item.localizacao}.`;
 
           const card = document.createElement('div');
@@ -320,7 +340,7 @@
             
             ${!isPendente ? `<p style="margin-top:8px;"><strong>Prof. Responsável:</strong> ${item.profAssumiu}</p>` : ''}
 
-            <!-- BOTÃO E CAIXA DE COPIAR SUMÁRIO -->
+            <!-- CAIXA E BOTÃO DE COPIAR SUMÁRIO -->
             <div class="summary-box">
               <strong>Sumário Sugerido:</strong>
               <p id="sumario-text-${item.linhaExcel}" style="margin-top: 4px; font-style: italic;">${textoSumario}</p>
@@ -343,7 +363,6 @@
       }
     }
 
-    // Função simples para copiar o sumário para a área de transferência
     function copiarSumario(elementId, toastId) {
       const textToCopy = document.getElementById(elementId).innerText;
       navigator.clipboard.writeText(textToCopy).then(() => {
@@ -403,13 +422,19 @@
         });
       }
 
+      // Junta o Ano, Turma e Alunos para enviar para o campo entidadeAlvo no Google Sheets
+      const ano = document.getElementById('ano').value.trim();
+      const turma = document.getElementById('turma').value.trim();
+      const alunos = document.getElementById('alunos').value.trim();
+      const entidadeAlvoCompleta = `${ano} - ${turma} (${alunos})`;
+
       const payload = {
         action: "novaNecessidade",
         payload: {
           tipoValência: document.getElementById('tipoValencia').value,
           diaSemana: document.getElementById('diaSemana').value,
           tempoLetivo: document.getElementById('tempoLetivo').value,
-          entidadeAlvo: document.getElementById('entidadeAlvo').value,
+          entidadeAlvo: entidadeAlvoCompleta,
           localizacao: document.getElementById('localizacao').value,
           prioridade: document.getElementById('prioridade').value,
           descricaoObjetivos: document.getElementById('descricaoObjetivos').value,
