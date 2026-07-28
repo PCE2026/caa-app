@@ -113,6 +113,22 @@
     .badge-priority { background: #fee2e2; color: #991b1b; }
     .badge-time { background: #f3f4f6; color: #374151; font-weight: 600; }
 
+    .doc-link-box {
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      background-color: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 6px;
+      display: inline-block;
+    }
+    .doc-link-box a {
+      color: #0284c7;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .doc-link-box a:hover { text-decoration: underline; }
+
     .summary-box {
       background: #f8fafc;
       border: 1px dashed #cbd5e1;
@@ -185,7 +201,7 @@
           <button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="fetchNeeds()">🔄 Atualizar Lista</button>
         </div>
 
-        <!-- SELETOR DE HORÁRIO ATIVO DO PROFESSOR -->
+        <!-- SELETOR DE HORÁRIO ATIVO -->
         <div class="schedule-picker">
           <div style="flex: 1;">
             <label for="filterDia">Dia da Semana:</label>
@@ -274,7 +290,7 @@
             </div>
           </div>
 
-          <!-- DADOS DA ENTIDADE ALVO (ANO, TURMA E ALUNO/PROFESSOR) -->
+          <!-- DADOS DA ENTIDADE ALVO -->
           <div class="grid-3">
             <div class="form-group">
               <label for="anoEscolaridade">Ano de Escolaridade:</label>
@@ -319,6 +335,12 @@
             <textarea id="descricaoObjetivos" rows="3" placeholder="Escreva os objetivos breves para orientar o professor..." required></textarea>
           </div>
 
+          <!-- CAMPO PARA ANEXAR DOCUMENTO -->
+          <div class="form-group">
+            <label for="ficheiroAnexo">Anexar Documento de Apoio (Opcional - PDF, Word, Imagem):</label>
+            <input type="file" id="ficheiroAnexo" accept=".pdf,.doc,.docx,.jpg,.png">
+          </div>
+
           <button type="submit" class="btn" id="btnSubmitForm">Registar Necessidade</button>
         </form>
       </div>
@@ -342,22 +364,10 @@
       const now = new Date();
       const day = now.getDay();
       
-      const daysMap = {
-        1: "2.ª feira",
-        2: "3.ª feira",
-        3: "4.ª feira",
-        4: "5.ª feira",
-        5: "6.ª feira"
-      };
-
-      if (daysMap[day]) {
-        document.getElementById('filterDia').value = daysMap[day];
-      } else {
-        document.getElementById('filterDia').value = "Todos";
-      }
+      const daysMap = { 1: "2.ª feira", 2: "3.ª feira", 3: "4.ª feira", 4: "5.ª feira", 5: "6.ª feira" };
+      document.getElementById('filterDia').value = daysMap[day] || "Todos";
 
       const minutes = now.getHours() * 60 + now.getMinutes();
-      
       let tempo = "Todos";
       if (minutes >= 510 && minutes < 570) tempo = "1 (8h30-9h20)";
       else if (minutes >= 570 && minutes < 630) tempo = "2 (9h30-10h20)";
@@ -438,6 +448,11 @@
         const isColab = item.tipoValência.includes('Apoio Colaborativo');
         const summaryText = generateDraftSummary(item.tipoValência, item.entidadeAlvo, item.descricaoObjetivos);
 
+        let docHtml = '';
+        if (item.urlDocumento) {
+          docHtml = `<div class="doc-link-box">📎 <a href="${item.urlDocumento}" target="_blank">Abrir / Descarregar Documento de Apoio</a></div>`;
+        }
+
         const card = document.createElement('div');
         card.className = `need-card ${isHigh ? 'high-priority' : ''}`;
         card.innerHTML = `
@@ -451,6 +466,7 @@
           </div>
           <h3 style="font-size: 1.05rem; margin: 0.4rem 0;">${item.entidadeAlvo}</h3>
           <p style="font-size: 0.875rem; color: #334155;">${item.descricaoObjetivos}</p>
+          ${docHtml}
           <div class="summary-box" id="sum-${item.idPedido}">${summaryText}</div>
           <button class="btn" onclick="takeSupport('${item.idPedido}', ${item.linhaExcel}, '${encodeURIComponent(item.tipoValência)}', '${encodeURIComponent(item.entidadeAlvo)}', '${encodeURIComponent(item.descricaoObjetivos)}')">Assumir Apoio e Copiar Sumário</button>
         `;
@@ -511,17 +527,26 @@
     async function handleNewNeed(e) {
       e.preventDefault();
       const btn = document.getElementById('btnSubmitForm');
-      btn.innerText = "A guardar...";
+      btn.innerText = "A enviar ficheiro e guardar...";
       btn.disabled = true;
 
       const ano = document.getElementById('anoEscolaridade').value;
       const turma = document.getElementById('turmaAluno').value.trim().toUpperCase();
       const detalhe = document.getElementById('nomeDetalhe').value.trim();
       
-      // Formata a Entidade Alvo (Ano + Turma + Detalhe Opcional)
       let entidadeFormatada = `${ano} ${turma}`;
-      if (detalhe) {
-        entidadeFormatada += ` - ${detalhe}`;
+      if (detalhe) entidadeFormatada += ` - ${detalhe}`;
+
+      const fileInput = document.getElementById('ficheiroAnexo');
+      let fileData = null;
+      let fileName = "";
+      let mimeType = "";
+
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        fileName = file.name;
+        mimeType = file.type;
+        fileData = await readFileAsBase64(file);
       }
 
       const payload = {
@@ -534,7 +559,10 @@
           entidadeAlvo: entidadeFormatada,
           localizacao: document.getElementById('localizacao').value,
           prioridade: document.getElementById('prioridade').value,
-          descricaoObjetivos: document.getElementById('descricaoObjetivos').value
+          descricaoObjetivos: document.getElementById('descricaoObjetivos').value,
+          fileData: fileData,
+          fileName: fileName,
+          mimeType: mimeType
         }
       };
 
@@ -543,15 +571,24 @@
           method: 'POST',
           body: JSON.stringify(payload)
         });
-        showToast("Necessidade registada com sucesso no Sheets!");
+        showToast("Necessidade e ficheiro guardados com sucesso!");
         document.getElementById('newNeedForm').reset();
         switchTab('professores');
       } catch (err) {
-        alert("Erro ao guardar a nova necessidade.");
+        alert("Erro ao guardar a necessidade com o ficheiro.");
       } finally {
         btn.innerText = "Registar Necessidade";
         btn.disabled = false;
       }
+    }
+
+    function readFileAsBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+      });
     }
 
     function showToast(msg) {
