@@ -143,25 +143,21 @@
     .summary-box {
       background-color: #EDF2F7;
       border-left: 4px solid var(--secondary);
-      padding: 15px;
-      margin-top: 15px;
+      padding: 12px;
+      margin-top: 12px;
       border-radius: 4px;
-      position: relative;
     }
 
     .btn-copy {
       background-color: var(--secondary);
       color: white;
       border: none;
-      padding: 8px 14px;
+      padding: 6px 12px;
       border-radius: 4px;
       cursor: pointer;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: bold;
-      margin-top: 10px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+      margin-top: 8px;
     }
 
     .btn-copy:hover {
@@ -205,7 +201,6 @@
     <!-- ÁREA DOS PROFESSORES -->
     <div id="professores" class="tab-content active">
       <h2>Necessidades de Apoio Disponíveis</h2>
-      <p style="margin-bottom: 15px; color: #718096;">Consulte as solicitações pendentes, assuma os apoios e copie os sumários diretamente.</p>
       <div id="lista-necessidades-prof">Carregando pedidos...</div>
     </div>
 
@@ -224,8 +219,19 @@
         </div>
 
         <div class="form-group">
-          <label>Dia da Semana e Tempo Letivo:</label>
-          <input type="text" id="diaTempo" placeholder="Ex: Terça-feira - 3º Tempo" required>
+          <label>Dia da Semana:</label>
+          <select id="diaSemana" required>
+            <option value="Segunda-feira">Segunda-feira</option>
+            <option value="Terça-feira">Terça-feira</option>
+            <option value="Quarta-feira">Quarta-feira</option>
+            <option value="Quinta-feira">Quinta-feira</option>
+            <option value="Sexta-feira">Sexta-feira</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Tempo Letivo:</label>
+          <input type="text" id="tempoLetivo" placeholder="Ex: 3º Tempo / 10h00 - 10h45" required>
         </div>
 
         <div class="form-group">
@@ -263,7 +269,7 @@
   </div>
 
   <script>
-    // URL do teu Google Apps Script
+    // Substitui pelo teu URL do Apps Script
     const SCRIPT_URL = "SUBS_AQUI_O_TEU_URL_DO_APPS_SCRIPT";
 
     function switchTab(tabId) {
@@ -295,7 +301,7 @@
         data.forEach(item => {
           const isPendente = item.estado === "Pendente";
           
-          // Formatação do Sumário padrão para os professores copiarem
+          // Texto formatado para o sumário
           const textoSumario = `Apoio CAA (${item.tipoValência}) - ${item.entidadeAlvo}. Objetivos: ${item.descricaoObjetivos}. Local: ${item.localizacao}.`;
 
           const card = document.createElement('div');
@@ -305,7 +311,7 @@
               <span>${item.tipoValência} - ${item.entidadeAlvo}</span>
               <span class="badge ${isPendente ? 'badge-pendente' : 'badge-execucao'}">${item.estado}</span>
             </div>
-            <p><strong>Horário:</strong> ${item.diaSemana} | ${item.tempoLetivo || ''}</p>
+            <p><strong>Dia:</strong> ${item.diaSemana} | <strong>Tempo:</strong> ${item.tempoLetivo}</p>
             <p><strong>Local:</strong> ${item.localizacao}</p>
             <p><strong>Prioridade:</strong> ${item.prioridade}</p>
             <p><strong>Descrição:</strong> ${item.descricaoObjetivos}</p>
@@ -314,13 +320,11 @@
             
             ${!isPendente ? `<p style="margin-top:8px;"><strong>Prof. Responsável:</strong> ${item.profAssumiu}</p>` : ''}
 
-            <!-- CAIXA COM O SUMÁRIO E BOTÃO DE COPIAR -->
+            <!-- BOTÃO E CAIXA DE COPIAR SUMÁRIO -->
             <div class="summary-box">
-              <strong>Sumário Sugerido para o Caderneta / Sumário Eletrónico:</strong>
-              <p id="sumario-text-${item.linhaExcel}" style="margin-top: 5px; font-style: italic;">${textoSumario}</p>
-              <button class="btn-copy" onclick="copiarSumario('sumario-text-${item.linhaExcel}', 'toast-${item.linhaExcel}')">
-                📋 Copiar Sumário
-              </button>
+              <strong>Sumário Sugerido:</strong>
+              <p id="sumario-text-${item.linhaExcel}" style="margin-top: 4px; font-style: italic;">${textoSumario}</p>
+              <button class="btn-copy" onclick="copiarSumario('sumario-text-${item.linhaExcel}', 'toast-${item.linhaExcel}')">📋 Copiar Sumário</button>
               <span id="toast-${item.linhaExcel}" class="copy-toast">✓ Copiado!</span>
             </div>
 
@@ -339,17 +343,13 @@
       }
     }
 
+    // Função simples para copiar o sumário para a área de transferência
     function copiarSumario(elementId, toastId) {
       const textToCopy = document.getElementById(elementId).innerText;
-      
       navigator.clipboard.writeText(textToCopy).then(() => {
         const toast = document.getElementById(toastId);
         toast.style.display = 'inline';
-        setTimeout(() => {
-          toast.style.display = 'none';
-        }, 2500);
-      }).catch(err => {
-        alert("Erro ao copiar. Selecione o texto manualmente.");
+        setTimeout(() => { toast.style.display = 'none'; }, 2000);
       });
     }
 
@@ -407,8 +407,8 @@
         action: "novaNecessidade",
         payload: {
           tipoValência: document.getElementById('tipoValencia').value,
-          diaSemana: document.getElementById('diaTempo').value,
-          tempoLetivo: "",
+          diaSemana: document.getElementById('diaSemana').value,
+          tempoLetivo: document.getElementById('tempoLetivo').value,
           entidadeAlvo: document.getElementById('entidadeAlvo').value,
           localizacao: document.getElementById('localizacao').value,
           prioridade: document.getElementById('prioridade').value,
@@ -436,7 +436,6 @@
       }
     }
 
-    // Carregar a lista automaticamente ao abrir a página
     carregarNecessidades();
   </script>
 </body>
