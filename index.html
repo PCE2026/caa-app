@@ -399,27 +399,107 @@
     }
 
     function renderNeeds() {
-      const container = document.getElementById('needsContainer');
-      container.innerHTML = '';
+      function renderNeeds() {
+  const container = document.getElementById('needsContainer');
+  container.innerHTML = '';
 
-      const filterDia = document.getElementById('filterDia').value;
-      const filterTempo = document.getElementById('filterTempo').value;
+  const filterDia = document.getElementById('filterDia').value;
+  const filterTempo = document.getElementById('filterTempo').value;
 
-      const filtered = needsData.filter(item => {
-        const estado = (item.estado || '').toString().trim().toLowerCase();
-        // Oculta tarefas que já foram assumidas ou concluídas
-        if (estado === 'em execução' || estado === 'concluído') return false;
-        
-        // Aplica o filtro de tipo (DL 54 vs Colaborativo)
-        if (currentFilter !== 'all' && !item.tipoValência.includes(currentFilter)) return false;
+  const filtered = needsData.filter(item => {
+    const estado = (item.estado || '').toString().trim().toLowerCase();
+    if (estado === 'em execução' || estado === 'concluído') return false;
+    
+    if (currentFilter !== 'all' && !item.tipoValência.includes(currentFilter)) return false;
+    if (filterDia !== 'Todos' && item.diaSemana && item.diaSemana !== filterDia) return false;
+    if (filterTempo !== 'Todos' && item.tempoLetivo && item.tempoLetivo !== filterTempo) return false;
 
-        // Se o utilizador filtrar por um dia específico
-        if (filterDia !== 'Todos' && item.diaSemana && item.diaSemana !== filterDia) return false;
+    return true;
+  });
 
-        // Se o utilizador filtrar por um tempo específico
-        if (filterTempo !== 'Todos' && item.tempoLetivo && item.tempoLetivo !== filterTempo) return false;
+  if (filtered.length === 0) {
+    container.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Não existem apoios pendentes com os filtros selecionados.</p>';
+    return;
+  }
 
-        return true;
+  filtered.forEach(item => {
+    const isHigh = item.prioridade === 'Alta';
+    const isColab = item.tipoValência.includes('Apoio Colaborativo');
+    const summaryText = generateDraftSummary(item.tipoValência, item.entidadeAlvo, item.descricaoObjetivos);
+
+    let docHtml = '';
+    if (item.urlDocumento) {
+      docHtml = `<div class="doc-link-box">📎 <a href="${item.urlDocumento}" target="_blank">Abrir / Descarregar Documento de Apoio</a></div>`;
+    }
+
+    const card = document.createElement('div');
+    card.className = `need-card ${isHigh ? 'high-priority' : ''}`;
+    card.innerHTML = `
+      <div class="need-header">
+        <div>
+          <span class="badge ${isColab ? 'badge-colab' : 'badge-dl54'}">${isColab ? 'Apoio Colaborativo' : 'DL 54/2018'}</span>
+          <span class="badge badge-time">📅 ${item.diaSemana || 'N/A'} • Tempo ${item.tempoLetivo || 'Geral'}</span>
+          ${isHigh ? '<span class="badge badge-priority">Prioridade Alta</span>' : ''}
+        </div>
+        <span style="font-size: 0.8rem; color: var(--text-muted);"><b>Local:</b> ${item.localizacao}</span>
+      </div>
+      <h3 style="font-size: 1.05rem; margin: 0.4rem 0;">${item.entidadeAlvo}</h3>
+      <p style="font-size: 0.875rem; color: #334155;">${item.descricaoObjetivos}</p>
+      ${docHtml}
+      <div class="summary-box" id="sum-${item.idPedido}">${summaryText}</div>
+      <button class="btn" onclick="takeSupport('${item.idPedido}')">Assumir Apoio e Copiar Sumário</button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+async function takeSupport(idPedido) {
+  const profName = document.getElementById('profName').value.trim();
+  if (!profName) {
+    alert("Por favor, preencha o seu nome no topo da página antes de assumir o apoio.");
+    document.getElementById('profName').focus();
+    return;
+  }
+
+  // Encontra a tarefa correspondente no array local sem passar textos por HTML
+  const item = needsData.find(n => String(n.idPedido) === String(idPedido));
+  if (!item) {
+    alert("Erro ao identificar a tarefa. Por favor atualize a lista.");
+    return;
+  }
+
+  const payload = {
+    action: "assumirApoio",
+    payload: {
+      idPedido: item.idPedido,
+      linhaExcel: item.linhaExcel,
+      nomeProfessor: profName,
+      tipoValência: item.tipoValência,
+      entidadeAlvo: item.entidadeAlvo,
+      descricaoObjetivos: item.descricaoObjetivos,
+      dataAssumido: new Date().toLocaleString('pt-PT')
+    }
+  };
+
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    const result = await res.json();
+
+    // Copia o sumário diretamente do elemento na página
+    const sumBox = document.getElementById(`sum-${idPedido}`);
+    if (sumBox) {
+      await navigator.clipboard.writeText(sumBox.innerText);
+    }
+    
+    showToast("Sumário copiado! Pode colar no Inovar Alunos.");
+    fetchNeeds();
+  } catch (err) {
+    alert("Erro ao registar o apoio. Verifique a ligação.");
+  }
+}
       });
 
       if (filtered.length === 0) {
