@@ -3,142 +3,261 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Centro de Apoio à Aprendizagem (CAA) - DL 54/2018</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Centro de Apoio à Aprendizagem (CAA)</title>
   <style>
     :root {
       --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --bg-slate: #f8fafc;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
       --card-bg: #ffffff;
-      --text-main: #0f172a;
+      --text: #0f172a;
       --text-muted: #64748b;
-      --border-color: #e2e8f0;
-      --dl54-color: #1e40af;
-      --dl54-bg: #dbeafe;
-      --colab-color: #065f46;
-      --colab-bg: #d1fae5;
-      --danger: #ef4444;
+      --border: #e2e8f0;
+      --colab-bg: #e0f2fe;
+      --colab-text: #0369a1;
+      --dl54-bg: #f1f5f9;
+      --dl54-text: #475569;
+      --high-bg: #fef2f2;
+      --high-border: #fca5a5;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-    body { background-color: var(--bg-slate); color: var(--text-main); line-height: 1.5; padding-bottom: 40px; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 1.5rem 1rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
 
     header {
-      background: #ffffff;
-      border-bottom: 1px solid var(--border-color);
-      padding: 1.25rem 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .header-title-container {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
     }
-    .brand h1 { font-size: 1.25rem; color: var(--primary-dark); font-weight: 700; }
-    .brand p { font-size: 0.85rem; color: var(--text-muted); }
 
-    .nav-tabs { display: flex; gap: 0.5rem; background: #f1f5f9; padding: 0.25rem; border-radius: 8px; }
+    .header-info h1 {
+      font-size: 1.5rem;
+      color: #1e3a8a;
+      margin-bottom: 0.25rem;
+    }
+
+    .header-info p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .nav-tabs {
+      display: flex;
+      background: #e2e8f0;
+      padding: 0.25rem;
+      border-radius: 8px;
+      gap: 0.25rem;
+    }
+
     .nav-tab {
       padding: 0.5rem 1rem;
       border: none;
-      background: transparent;
-      font-weight: 600;
-      font-size: 0.875rem;
-      color: var(--text-muted);
-      cursor: pointer;
-      border-radius: 6px;
-      transition: all 0.2s;
-    }
-    .nav-tab.active { background: white; color: var(--primary); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-
-    main { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
-
-    .view-panel { display: none; }
-    .view-panel.active { display: block; }
-
-    .card {
-      background: white;
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-    }
-
-    .form-group { margin-bottom: 1rem; }
-    label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.4rem; }
-    input, select, textarea {
-      width: 100%;
-      padding: 0.65rem 0.85rem;
-      border: 1px solid var(--border-color);
+      background: none;
       border-radius: 6px;
       font-size: 0.9rem;
-      outline: none;
-    }
-    input:focus, select:focus, textarea:focus { border-color: var(--primary); }
-
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 1rem; }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-
-    .btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.65rem 1.25rem;
-      border-radius: 6px;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
-      transition: background 0.2s;
+      color: var(--text-muted);
+      transition: all 0.2s;
     }
-    .btn:hover { background: var(--primary-dark); }
 
-    .need-card {
-      border: 1px solid var(--border-color);
-      border-left: 5px solid var(--primary);
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-      background: white;
+    .nav-tab.active {
+      background: var(--card-bg);
+      color: var(--primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .view-panel {
+      display: none;
+    }
+
+    .view-panel.active {
+      display: block;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      margin-bottom: 1.5rem;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #1e293b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: #334155;
+    }
+
+    input[type="text"], select, textarea {
+      width: 100%;
+      padding: 0.65rem 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+      background: #fff;
+    }
+
+    input[type="text"]:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      .header-title-container {
+        flex-direction: column;
+      }
+    }
+
+    .filters-bar {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
       margin-bottom: 1rem;
     }
-    .need-card.high-priority { border-left-color: var(--danger); }
-    .need-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; }
-    .badge {
-      display: inline-block;
-      padding: 0.25rem 0.6rem;
-      font-size: 0.75rem;
-      font-weight: 700;
-      border-radius: 50px;
-    }
-    .badge-dl54 { background: var(--dl54-bg); color: var(--dl54-color); }
-    .badge-colab { background: var(--colab-bg); color: var(--colab-color); }
-    .badge-priority { background: #fee2e2; color: #991b1b; }
-    .badge-time { background: #f3f4f6; color: #374151; font-weight: 600; }
 
-    .doc-link-box {
-      margin: 0.5rem 0;
-      padding: 0.5rem;
-      background-color: #f0f9ff;
-      border: 1px solid #bae6fd;
-      border-radius: 6px;
+    .filter-btn {
+      padding: 0.4rem 0.8rem;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .filter-btn.active {
+      background: #1e293b;
+      color: #fff;
+      border-color: #1e293b;
+    }
+
+    .need-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .need-card.high-priority {
+      background-color: var(--high-bg);
+      border-color: var(--high-border);
+    }
+
+    .need-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
       display: inline-block;
     }
-    .doc-link-box a {
-      color: #0284c7;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.85rem;
-    }
-    .doc-link-box a:hover { text-decoration: underline; }
+
+    .badge-colab { background: var(--colab-bg); color: var(--colab-text); }
+    .badge-dl54 { background: var(--dl54-bg); color: var(--dl54-text); }
+    .badge-priority { background: #fee2e2; color: #991b1b; }
+    .badge-time { background: #f3f4f6; color: #374151; }
 
     .summary-box {
-      background: #f8fafc;
-      border: 1px dashed #cbd5e1;
+      background: #f1f5f9;
       padding: 0.75rem;
       border-radius: 6px;
       font-size: 0.85rem;
       color: #334155;
       margin: 0.75rem 0;
-      font-family: monospace;
+      border-left: 3px solid var(--primary);
     }
+
+    .doc-link-box {
+      margin: 0.5rem 0;
+      font-size: 0.85rem;
+    }
+
+    .doc-link-box a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .doc-link-box a:hover {
+      text-decoration: underline;
+    }
+
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.65rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #64748b; }
+    .btn-secondary:hover { background: #475569; }
 
     .toast {
       position: fixed;
@@ -146,67 +265,106 @@
       right: 20px;
       background: #10b981;
       color: white;
-      padding: 1rem 1.5rem;
-      border-radius: 8px;
-      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
       display: none;
       z-index: 1000;
     }
-
-    .filters { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
-    .filter-btn { padding: 0.4rem 0.8rem; font-size: 0.8rem; border-radius: 50px; border: 1px solid var(--border-color); background: white; cursor: pointer; }
-    .filter-btn.active { background: var(--text-main); color: white; border-color: var(--text-main); }
-    
-    .schedule-picker {
-      background: #f1f5f9;
-      padding: 0.75rem;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-    }
-    .schedule-picker label { margin-bottom: 0; white-space: nowrap; }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="brand">
-      <h1>Centro de Apoio à Aprendizagem (CAA)</h1>
-      <p>Plataforma de Gestão e Triagem • DL 54/2018</p>
-    </div>
-    <div class="nav-tabs">
-      <button class="nav-tab active" onclick="switchTab('professores')">Entrada do Professor</button>
-      <button class="nav-tab" onclick="switchTab('gestao')">Gestão / Coordenação</button>
+    <div class="header-title-container">
+      <div class="header-info">
+        <h1>Centro de Apoio à Aprendizagem (CAA)</h1>
+        <p>Plataforma de Gestão e Triagem • DL 54/2018</p>
+      </div>
+      <div class="nav-tabs">
+        <button class="nav-tab active" onclick="switchTab('professores')">Entrada do Professor</button>
+        <button class="nav-tab" onclick="switchTab('gestao')">Gestão / Coordenação</button>
+      </div>
     </div>
   </header>
 
-  <main>
-    <!-- VISTA DO PROFESSOR -->
-    <div id="view-professores" class="view-panel active">
-      <div class="card">
-        <h2>1. Identificação do Docente</h2>
-        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">Indique o seu nome para assumir e registar o apoio no CAA.</p>
-        <div class="form-group">
-          <label for="profName">Nome do Professor com Horas no CAA:</label>
-          <input type="text" id="profName" placeholder="Ex: Prof. António Silva">
+  <!-- VISTA 1: PROFESSORES COM HORAS NO CAA -->
+  <main id="view-professores" class="view-panel active">
+    <div class="card">
+      <div class="card-title">1. Identificação do Docente</div>
+      <div class="card-subtitle">Indique o seu nome para assumir e registar o apoio no CAA.</div>
+      <div class="form-group">
+        <label for="profName">Nome do Professor com Horas no CAA:</label>
+        <input type="text" id="profName" placeholder="Ex: Maria João Santos">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span>2. Seleção do Apoio / Tarefa Ativa</span>
+        <button class="btn btn-secondary" onclick="fetchNeeds()" style="width: auto; padding: 0.3rem 0.8rem; font-size: 0.8rem;">🔄 Atualizar Lista</button>
+      </div>
+
+      <div class="form-row" style="margin-bottom: 1rem; background: #f1f5f9; padding: 0.75rem; border-radius: 8px;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="font-size: 0.8rem;">Dia da Semana:</label>
+          <select id="filterDia" onchange="renderNeeds()">
+            <option value="Todos">Ver Todos os Dias</option>
+            <option value="2.ª feira">2.ª feira</option>
+            <option value="3.ª feira">3.ª feira</option>
+            <option value="4.ª feira">4.ª feira</option>
+            <option value="5.ª feira">5.ª feira</option>
+            <option value="6.ª feira">6.ª feira</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="font-size: 0.8rem;">Tempo Letivo:</label>
+          <select id="filterTempo" onchange="renderNeeds()">
+            <option value="Todos">Ver Todos os Tempos</option>
+            <option value="Tempo 1 (8h30-9h20)">Tempo 1 (8h30-9h20)</option>
+            <option value="Tempo 2 (9h25-10h15)">Tempo 2 (9h25-10h15)</option>
+            <option value="Tempo 3 (10h30-11h20)">Tempo 3 (10h30-11h20)</option>
+            <option value="Tempo 4 (11h25-12h15)">Tempo 4 (11h25-12h15)</option>
+            <option value="Tempo 5 (12h20-13h10)">Tempo 5 (12h20-13h10)</option>
+            <option value="Tempo 6 (13h20-14h10)">Tempo 6 (13h20-14h10)</option>
+            <option value="Tempo 7 (14h15-15h05)">Tempo 7 (14h15-15h05)</option>
+            <option value="Tempo 8 (15h15-16h05)">Tempo 8 (15h15-16h05)</option>
+            <option value="Tempo 9 (16h10-17h00)">Tempo 9 (16h10-17h00)</option>
+          </select>
         </div>
       </div>
 
-      <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-          <h2>2. Seleção do Apoio / Tarefa Ativa</h2>
-          <button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="fetchNeeds()">🔄 Atualizar Lista</button>
+      <div class="filters-bar">
+        <button class="filter-btn active" onclick="filterNeeds('all', this)">Todos os Tipos</button>
+        <button class="filter-btn" onclick="filterNeeds('Reforço Pedagógico', this)">Apenas DL 54</button>
+        <button class="filter-btn" onclick="filterNeeds('Apoio Colaborativo', this)">Coadjuvação & Cidadania</button>
+      </div>
+
+      <div id="loading" style="text-align: center; color: var(--text-muted); padding: 2rem; display: none;">A carregar pedidos do CAA...</div>
+      <div id="needsContainer"></div>
+    </div>
+  </main>
+
+  <!-- VISTA 2: GESTÃO / REGISTO DE NECESSIDADES -->
+  <main id="view-gestao" class="view-panel">
+    <div class="card">
+      <div class="card-title">Registar Nova Necessidade de Apoio</div>
+      <div class="card-subtitle">Formulário exclusivo para a Coordenação do CAA ou Diretores de Turma solicitarem intervenção.</div>
+
+      <form id="newNeedForm" onsubmit="handleNewNeed(event)">
+        <div class="form-group">
+          <label>Tipo de Valência:</label>
+          <select id="tipoValência" required>
+            <option value="Reforço Pedagógico (DL 54/2018)">Reforço Pedagógico (DL 54/2018)</option>
+            <option value="Apoio Colaborativo ao Docente">Apoio Colaborativo ao Docente</option>
+            <option value="Apoio aos Diretores de Turma (Cidadania)">Apoio aos Diretores de Turma (Cidadania)</option>
+          </select>
         </div>
 
-        <!-- SELETOR DE FILTROS (POR DEFEITO MOSTRA TODOS) -->
-        <div class="schedule-picker">
-          <div style="flex: 1;">
-            <label for="filterDia">Dia da Semana:</label>
-            <select id="filterDia" onchange="renderNeeds()">
-              <option value="Todos" selected>Ver Todos os Dias</option>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Dia da Semana Pretendido:</label>
+            <select id="diaSemana" required>
               <option value="2.ª feira">2.ª feira</option>
               <option value="3.ª feira">3.ª feira</option>
               <option value="4.ª feira">4.ª feira</option>
@@ -214,139 +372,82 @@
               <option value="6.ª feira">6.ª feira</option>
             </select>
           </div>
-          <div style="flex: 2;">
-            <label for="filterTempo">Tempo Letivo:</label>
-            <select id="filterTempo" onchange="renderNeeds()">
-              <option value="Todos" selected>Ver Todos os Tempos</option>
-              <option value="1 (8h30-9h20)">1- 8h30-9h20</option>
-              <option value="2 (9h30-10h20)">2- 9h30-10h20</option>
-              <option value="3 (10h40-11h30)">3- 10h40-11h30</option>
-              <option value="4 (11h40-12h30)">4- 11h40-12h30</option>
-              <option value="5 (12h40-13h30)">5- 12h40-13h30</option>
-              <option value="6 (13h30-14h20)">6- 13h30-14h20</option>
-              <option value="7 (14h30-15h20)">7- 14h30-15h20</option>
-              <option value="8 (15h35-16h25)">8- 15h35-16h25</option>
-              <option value="9 (16h35-17h25)">9- 16h35-17h25</option>
-              <option value="10 (17h35-18h25)">10- 17h35-18h25</option>
+          <div class="form-group">
+            <label>Tempo Letivo:</label>
+            <select id="tempoLetivo" required>
+              <option value="Tempo 1 (8h30-9h20)">Tempo 1 (8h30-9h20)</option>
+              <option value="Tempo 2 (9h25-10h15)">Tempo 2 (9h25-10h15)</option>
+              <option value="Tempo 3 (10h30-11h20)">Tempo 3 (10h30-11h20)</option>
+              <option value="Tempo 4 (11h25-12h15)">Tempo 4 (11h25-12h15)</option>
+              <option value="Tempo 5 (12h20-13h10)">Tempo 5 (12h20-13h10)</option>
+              <option value="Tempo 6 (13h20-14h10)">Tempo 6 (13h20-14h10)</option>
+              <option value="Tempo 7 (14h15-15h05)">Tempo 7 (14h15-15h05)</option>
+              <option value="Tempo 8 (15h15-16h05)">Tempo 8 (15h15-16h05)</option>
+              <option value="Tempo 9 (16h10-17h00)">Tempo 9 (16h10-17h00)</option>
             </select>
           </div>
         </div>
-        
-        <div class="filters">
-          <button class="filter-btn active" onclick="filterNeeds('all', this)">Todos os Tipos</button>
-          <button class="filter-btn" onclick="filterNeeds('DL 54', this)">Apenas DL 54</button>
-          <button class="filter-btn" onclick="filterNeeds('Apoio Colaborativo', this)">Coadjuvação & Cidadania</button>
-        </div>
 
-        <div id="loading" style="text-align: center; padding: 2rem; color: var(--text-muted);">A carregar dados do Google Sheets...</div>
-        <div id="needsContainer"></div>
-      </div>
-    </div>
-
-    <!-- VISTA DA GESTÃO -->
-    <div id="view-gestao" class="view-panel">
-      <div class="card">
-        <h2>Registar Nova Necessidade de Apoio</h2>
-        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">Preencha o formulário para adicionar um novo pedido à fila dos professores.</p>
-        <form id="newNeedForm" onsubmit="handleNewNeed(event)">
-          
+        <div class="form-row">
           <div class="form-group">
-            <label for="tipoValência">Valência / Área da Lei (DL 54/2018):</label>
-            <select id="tipoValência" required>
-              <option value="DL 54 (Art.º 13.º, n.º 3, a) - Reforço Pedagógico Acrescido">DL 54 (Art.º 13.º, n.º 3, a) - Reforço Pedagógico Acrescido</option>
-              <option value="DL 54 (Art.º 13.º, n.º 3, c) - Adaptação de Materiais e Acessibilidade">DL 54 (Art.º 13.º, n.º 3, c) - Adaptação de Materiais e Acessibilidade</option>
-              <option value="DL 54 (Art.º 13.º, n.º 3, d) - Autonomia, Autorregulação e Socialização">DL 54 (Art.º 13.º, n.º 3, d) - Autonomia, Autorregulação e Socialização</option>
-              <option value="DL 54 (Art.º 13.º, n.º 3, f) - Transição para a Vida Ativa (PIT/PVA)">DL 54 (Art.º 13.º, n.º 3, f) - Transição para a Vida Ativa (PIT/PVA)</option>
-              <option value="DL 54 (Art.º 13.º, n.º 3, b) - Apoio Colaborativo aos Docentes (Coadjuvação / Cidadania / DT)">DL 54 (Art.º 13.º, n.º 3, b) - Apoio Colaborativo aos Docentes (Coadjuvação / Cidadania / DT)</option>
+            <label>Ano de Escolaridade:</label>
+
+            <select id="anoEscolaridade" required>
+              <option value="1.º Ano">1.º Ano</option>
+              <option value="2.º Ano">2.º Ano</option>
+              <option value="3.º Ano">3.º Ano</option>
+              <option value="4.º Ano">4.º Ano</option>
+              <option value="5.º Ano">5.º Ano</option>
+              <option value="6.º Ano">6.º Ano</option>
+              <option value="7.º Ano">7.º Ano</option>
+              <option value="8.º Ano">8.º Ano</option>
+              <option value="9.º Ano">9.º Ano</option>
+              <option value="10.º Ano">10.º Ano</option>
+              <option value="11.º Ano">11.º Ano</option>
+              <option value="12.º Ano">12.º Ano</option>
             </select>
           </div>
-
-          <!-- DIA E TEMPO LETIVO -->
-          <div class="grid-2">
-            <div class="form-group">
-              <label for="diaSemana">Dia da Semana:</label>
-              <select id="diaSemana" required>
-                <option value="2.ª feira">2.ª feira</option>
-                <option value="3.ª feira">3.ª feira</option>
-                <option value="4.ª feira">4.ª feira</option>
-                <option value="5.ª feira">5.ª feira</option>
-                <option value="6.ª feira">6.ª feira</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="tempoLetivo">Tempo Letivo / Horário:</label>
-              <select id="tempoLetivo" required>
-                <option value="1 (8h30-9h20)">1- 8h30-9h20</option>
-                <option value="2 (9h30-10h20)">2- 9h30-10h20</option>
-                <option value="3 (10h40-11h30)">3- 10h40-11h30</option>
-                <option value="4 (11h40-12h30)">4- 11h40-12h30</option>
-                <option value="5 (12h40-13h30)">5- 12h40-13h30</option>
-                <option value="6 (13h30-14h20)">6- 13h30-14h20</option>
-                <option value="7 (14h30-15h20)">7- 14h30-15h20</option>
-                <option value="8 (15h35-16h25)">8- 15h35-16h25</option>
-                <option value="9 (16h35-17h25)">9- 16h35-17h25</option>
-                <option value="10 (17h35-18h25)">10- 17h35-18h25</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- DADOS DA ENTIDADE ALVO -->
-          <div class="grid-3">
-            <div class="form-group">
-              <label for="anoEscolaridade">Ano de Escolaridade:</label>
-              <select id="anoEscolaridade" required>
-                <option value="5.º Ano">5.º Ano</option>
-                <option value="6.º Ano">6.º Ano</option>
-                <option value="7.º Ano">7.º Ano</option>
-                <option value="8.º Ano">8.º Ano</option>
-                <option value="9.º Ano">9.º Ano</option>
-                <option value="10.º Ano">10.º Ano</option>
-                <option value="11.º Ano">11.º Ano</option>
-                <option value="12.º Ano">12.º Ano</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="turmaAluno">Turma:</label>
-              <input type="text" id="turmaAluno" placeholder="Ex: B" required oninput="this.value = this.value.toUpperCase()">
-            </div>
-            <div class="form-group">
-              <label for="nomeDetalhe">Aluno / Professor / Disciplina:</label>
-              <input type="text" id="nomeDetalhe" placeholder="Ex: Matilde Costa  OU  Prof. Silva (Português)">
-            </div>
-          </div>
-
-          <div class="grid-2">
-            <div class="form-group">
-              <label for="localizacao">Localização no CAA / Sala:</label>
-              <input type="text" id="localizacao" placeholder="Ex: Mesa 2 / Sala 12" required>
-            </div>
-            <div class="form-group">
-              <label for="prioridade">Nível de Prioridade:</label>
-              <select id="prioridade">
-                <option value="Normal">Normal</option>
-                <option value="Média">Média</option>
-                <option value="Alta">Alta</option>
-              </select>
-            </div>
-          </div>
-
           <div class="form-group">
-            <label for="descricaoObjetivos">Instruções e Objetivos Pedagógicos:</label>
-            <textarea id="descricaoObjetivos" rows="3" placeholder="Escreva os objetivos breves para orientar o professor..." required></textarea>
+            <label>Turma:</label>
+            <input type="text" id="turmaAluno" placeholder="Ex: A, B, C ou CEF..." required>
           </div>
+        </div>
 
+        <div class="form-group">
+          <label>Nome do Aluno / Disciplina / Grupo / Projeto:</label>
+          <input type="text" id="nomeDetalhe" placeholder="Ex: João Silva (Matemática) ou Projeto Cidadania" required>
+        </div>
+
+        <div class="form-row">
           <div class="form-group">
-            <label for="ficheiroAnexo">Anexar Documento de Apoio (Opcional - PDF, Word, Imagem):</label>
-            <input type="file" id="ficheiroAnexo" accept=".pdf,.doc,.docx,.jpg,.png">
+            <label>Localização / Sala:</label>
+            <input type="text" id="localizacao" placeholder="Ex: Sala CAA, Sala 12, etc." required>
           </div>
+          <div class="form-group">
+            <label>Nível de Prioridade:</label>
+            <select id="prioridade">
+              <option value="Normal">Normal</option>
+              <option value="Alta">Alta</option>
+            </select>
+          </div>
+        </div>
 
-          <button type="submit" class="btn" id="btnSubmitForm">Registar Necessidade</button>
-        </form>
-      </div>
+        <div class="form-group">
+          <label>Descrição das Tarefas / Objetivos / Conteúdos:</label>
+          <textarea id="descricaoObjetivos" rows="3" placeholder="Pormenorize o trabalho a desenvolver com o aluno ou turma..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Anexar Documento / Ficha de Apoio (Opcional):</label>
+          <input type="file" id="ficheiroAnexo" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
+        </div>
+
+        <button type="submit" id="btnSubmitForm" class="btn">Registar Necessidade</button>
+      </form>
     </div>
   </main>
 
-  <div id="toast" class="toast">Sumário copiado e apoio registado com sucesso!</div>
+  <div id="toast" class="toast">Sumário copiado com sucesso!</div>
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTM3Ps2cD5SSNYhNkxMbEWDMPWfOikrVKp48lhY9HVHa7nbM7J0nsg06yial7jZ_zz/exec";
@@ -355,7 +456,6 @@
     let currentFilter = 'all';
 
     window.onload = function() {
-      // Define por defeito 'Todos' para ver todas as tarefas ao carregar a página
       document.getElementById('filterDia').value = "Todos";
       document.getElementById('filterTempo').value = "Todos";
       fetchNeeds();
@@ -399,107 +499,21 @@
     }
 
     function renderNeeds() {
-      function renderNeeds() {
-  const container = document.getElementById('needsContainer');
-  container.innerHTML = '';
+      const container = document.getElementById('needsContainer');
+      container.innerHTML = '';
 
-  const filterDia = document.getElementById('filterDia').value;
-  const filterTempo = document.getElementById('filterTempo').value;
+      const filterDia = document.getElementById('filterDia').value;
+      const filterTempo = document.getElementById('filterTempo').value;
 
-  const filtered = needsData.filter(item => {
-    const estado = (item.estado || '').toString().trim().toLowerCase();
-    if (estado === 'em execução' || estado === 'concluído') return false;
-    
-    if (currentFilter !== 'all' && !item.tipoValência.includes(currentFilter)) return false;
-    if (filterDia !== 'Todos' && item.diaSemana && item.diaSemana !== filterDia) return false;
-    if (filterTempo !== 'Todos' && item.tempoLetivo && item.tempoLetivo !== filterTempo) return false;
+      const filtered = needsData.filter(item => {
+        const estado = (item.estado || '').toString().trim().toLowerCase();
+        if (estado === 'em execução' || estado === 'concluído') return false;
+        
+        if (currentFilter !== 'all' && !item.tipoValência.includes(currentFilter)) return false;
+        if (filterDia !== 'Todos' && item.diaSemana && item.diaSemana !== filterDia) return false;
+        if (filterTempo !== 'Todos' && item.tempoLetivo && item.tempoLetivo !== filterTempo) return false;
 
-    return true;
-  });
-
-  if (filtered.length === 0) {
-    container.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Não existem apoios pendentes com os filtros selecionados.</p>';
-    return;
-  }
-
-  filtered.forEach(item => {
-    const isHigh = item.prioridade === 'Alta';
-    const isColab = item.tipoValência.includes('Apoio Colaborativo');
-    const summaryText = generateDraftSummary(item.tipoValência, item.entidadeAlvo, item.descricaoObjetivos);
-
-    let docHtml = '';
-    if (item.urlDocumento) {
-      docHtml = `<div class="doc-link-box">📎 <a href="${item.urlDocumento}" target="_blank">Abrir / Descarregar Documento de Apoio</a></div>`;
-    }
-
-    const card = document.createElement('div');
-    card.className = `need-card ${isHigh ? 'high-priority' : ''}`;
-    card.innerHTML = `
-      <div class="need-header">
-        <div>
-          <span class="badge ${isColab ? 'badge-colab' : 'badge-dl54'}">${isColab ? 'Apoio Colaborativo' : 'DL 54/2018'}</span>
-          <span class="badge badge-time">📅 ${item.diaSemana || 'N/A'} • Tempo ${item.tempoLetivo || 'Geral'}</span>
-          ${isHigh ? '<span class="badge badge-priority">Prioridade Alta</span>' : ''}
-        </div>
-        <span style="font-size: 0.8rem; color: var(--text-muted);"><b>Local:</b> ${item.localizacao}</span>
-      </div>
-      <h3 style="font-size: 1.05rem; margin: 0.4rem 0;">${item.entidadeAlvo}</h3>
-      <p style="font-size: 0.875rem; color: #334155;">${item.descricaoObjetivos}</p>
-      ${docHtml}
-      <div class="summary-box" id="sum-${item.idPedido}">${summaryText}</div>
-      <button class="btn" onclick="takeSupport('${item.idPedido}')">Assumir Apoio e Copiar Sumário</button>
-    `;
-    container.appendChild(card);
-  });
-}
-
-async function takeSupport(idPedido) {
-  const profName = document.getElementById('profName').value.trim();
-  if (!profName) {
-    alert("Por favor, preencha o seu nome no topo da página antes de assumir o apoio.");
-    document.getElementById('profName').focus();
-    return;
-  }
-
-  // Encontra a tarefa correspondente no array local sem passar textos por HTML
-  const item = needsData.find(n => String(n.idPedido) === String(idPedido));
-  if (!item) {
-    alert("Erro ao identificar a tarefa. Por favor atualize a lista.");
-    return;
-  }
-
-  const payload = {
-    action: "assumirApoio",
-    payload: {
-      idPedido: item.idPedido,
-      linhaExcel: item.linhaExcel,
-      nomeProfessor: profName,
-      tipoValência: item.tipoValência,
-      entidadeAlvo: item.entidadeAlvo,
-      descricaoObjetivos: item.descricaoObjetivos,
-      dataAssumido: new Date().toLocaleString('pt-PT')
-    }
-  };
-
-  try {
-    const res = await fetch(SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
-    const result = await res.json();
-
-    // Copia o sumário diretamente do elemento na página
-    const sumBox = document.getElementById(`sum-${idPedido}`);
-    if (sumBox) {
-      await navigator.clipboard.writeText(sumBox.innerText);
-    }
-    
-    showToast("Sumário copiado! Pode colar no Inovar Alunos.");
-    fetchNeeds();
-  } catch (err) {
-    alert("Erro ao registar o apoio. Verifique a ligação.");
-  }
-}
+        return true;
       });
 
       if (filtered.length === 0) {
@@ -532,7 +546,7 @@ async function takeSupport(idPedido) {
           <p style="font-size: 0.875rem; color: #334155;">${item.descricaoObjetivos}</p>
           ${docHtml}
           <div class="summary-box" id="sum-${item.idPedido}">${summaryText}</div>
-          <button class="btn" onclick="takeSupport('${item.idPedido}', ${item.linhaExcel}, '${encodeURIComponent(item.tipoValência)}', '${encodeURIComponent(item.entidadeAlvo)}', '${encodeURIComponent(item.descricaoObjetivos)}')">Assumir Apoio e Copiar Sumário</button>
+          <button class="btn" onclick="takeSupport('${item.idPedido}')">Assumir Apoio e Copiar Sumário</button>
         `;
         container.appendChild(card);
       });
@@ -548,27 +562,31 @@ async function takeSupport(idPedido) {
       }
     }
 
-    async function takeSupport(idPedido, linhaExcel, encodedValencia, encodedEntidade, encodedObjetivos) {
-      const profName = document.getElementById('profName').value.trim();
+    async function takeSupport(idPedido) {
+      const profNameInput = document.getElementById('profName');
+      const profName = profNameInput ? profNameInput.value.trim() : '';
+
       if (!profName) {
         alert("Por favor, preencha o seu nome no topo da página antes de assumir o apoio.");
-        document.getElementById('profName').focus();
+        if (profNameInput) profNameInput.focus();
         return;
       }
 
-      const valencia = decodeURIComponent(encodedValencia);
-      const entidade = decodeURIComponent(encodedEntidade);
-      const objetivos = decodeURIComponent(encodedObjetivos);
+      const item = needsData.find(n => String(n.idPedido) === String(idPedido));
+      if (!item) {
+        alert("Erro ao identificar a tarefa. Por favor atualize a lista.");
+        return;
+      }
 
       const payload = {
         action: "assumirApoio",
         payload: {
-          idPedido: idPedido,
-          linhaExcel: linhaExcel,
+          idPedido: item.idPedido,
+          linhaExcel: item.linhaExcel,
           nomeProfessor: profName,
-          tipoValência: valencia,
-          entidadeAlvo: entidade,
-          descricaoObjetivos: objetivos,
+          tipoValência: item.tipoValência,
+          entidadeAlvo: item.entidadeAlvo,
+          descricaoObjetivos: item.descricaoObjetivos,
           dataAssumido: new Date().toLocaleString('pt-PT')
         }
       };
@@ -580,7 +598,11 @@ async function takeSupport(idPedido) {
         });
         const result = await res.json();
 
-        navigator.clipboard.writeText(result.resultado.sumarioGerado);
+        const sumBox = document.getElementById(`sum-${idPedido}`);
+        if (sumBox) {
+          await navigator.clipboard.writeText(sumBox.innerText);
+        }
+        
         showToast("Sumário copiado! Pode colar no Inovar Alunos.");
         fetchNeeds();
       } catch (err) {
