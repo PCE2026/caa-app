@@ -140,38 +140,6 @@
     .badge-pendente { background-color: #DD6B20; }
     .badge-execucao { background-color: var(--success); }
 
-    .summary-box {
-      background-color: #EDF2F7;
-      border-left: 4px solid var(--secondary);
-      padding: 12px;
-      margin-top: 12px;
-      border-radius: 4px;
-    }
-
-    .btn-copy {
-      background-color: var(--secondary);
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: bold;
-      margin-top: 8px;
-    }
-
-    .btn-copy:hover {
-      background-color: var(--primary);
-    }
-
-    .copy-toast {
-      display: none;
-      color: var(--success);
-      font-size: 12px;
-      font-weight: bold;
-      margin-left: 10px;
-    }
-
     .file-link {
       display: inline-block;
       margin-top: 8px;
@@ -320,9 +288,6 @@
         container.innerHTML = "";
         data.forEach(item => {
           const isPendente = item.estado === "Pendente";
-          
-          // Formatação do texto para o sumário
-          const textoSumario = `Apoio CAA (${item.tipoValência}) - ${item.entidadeAlvo}. Objetivos: ${item.descricaoObjetivos}. Local: ${item.localizacao}.`;
 
           const card = document.createElement('div');
           card.className = 'card';
@@ -340,14 +305,6 @@
             
             ${!isPendente ? `<p style="margin-top:8px;"><strong>Prof. Responsável:</strong> ${item.profAssumiu}</p>` : ''}
 
-            <!-- CAIXA E BOTÃO DE COPIAR SUMÁRIO -->
-            <div class="summary-box">
-              <strong>Sumário Sugerido:</strong>
-              <p id="sumario-text-${item.linhaExcel}" style="margin-top: 4px; font-style: italic;">${textoSumario}</p>
-              <button class="btn-copy" onclick="copiarSumario('sumario-text-${item.linhaExcel}', 'toast-${item.linhaExcel}')">📋 Copiar Sumário</button>
-              <span id="toast-${item.linhaExcel}" class="copy-toast">✓ Copiado!</span>
-            </div>
-
             ${isPendente ? `
               <div style="margin-top: 15px;">
                 <input type="text" id="prof-nome-${item.linhaExcel}" placeholder="O seu nome" style="width:70%; display:inline-block;">
@@ -361,15 +318,6 @@
       } catch (err) {
         container.innerHTML = "<p>Erro ao carregar os dados. Verifique a ligação ao script.</p>";
       }
-    }
-
-    function copiarSumario(elementId, toastId) {
-      const textToCopy = document.getElementById(elementId).innerText;
-      navigator.clipboard.writeText(textToCopy).then(() => {
-        const toast = document.getElementById(toastId);
-        toast.style.display = 'inline';
-        setTimeout(() => { toast.style.display = 'none'; }, 2000);
-      });
     }
 
     async function assumirApoio(linhaExcel) {
@@ -422,7 +370,6 @@
         });
       }
 
-      // Junta o Ano, Turma e Alunos para enviar para o campo entidadeAlvo no Google Sheets
       const ano = document.getElementById('ano').value.trim();
       const turma = document.getElementById('turma').value.trim();
       const alunos = document.getElementById('alunos').value.trim();
