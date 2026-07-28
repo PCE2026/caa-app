@@ -1,514 +1,443 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-PT">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Centro de Apoio à Aprendizagem (CAA)</title>
   <style>
     :root {
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text: #0f172a;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --colab-bg: #e0f2fe;
-      --colab-text: #0369a1;
-      --dl54-bg: #f1f5f9;
-      --dl54-text: #475569;
-      --high-bg: #fef2f2;
-      --high-border: #fca5a5;
-      --medium-bg: #fefce8;
-      --medium-border: #fde047;
+      --primary: #1A365D;
+      --secondary: #2B6CB0;
+      --accent: #319795;
+      --bg: #F7FAFC;
+      --card-bg: #FFFFFF;
+      --text: #2D3748;
+      --border: #E2E8F0;
+      --success: #38A169;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); line-height: 1.5; padding: 1.5rem 1rem; max-width: 900px; margin: 0 auto; }
-    header { margin-bottom: 2rem; }
-    .header-title-container { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; }
-    .header-info h1 { font-size: 1.5rem; color: #1e3a8a; margin-bottom: 0.25rem; }
-    .header-info p { color: var(--text-muted); font-size: 0.9rem; }
-    .nav-tabs { display: flex; background: #e2e8f0; padding: 0.25rem; border-radius: 8px; gap: 0.25rem; }
-    .nav-tab { padding: 0.5rem 1rem; border: none; background: none; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; color: var(--text-muted); transition: all 0.2s; }
-    .nav-tab.active { background: var(--card-bg); color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    .view-panel { display: none; }
-    .view-panel.active { display: block; }
-    .card { background: var(--card-bg); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 1.5rem; }
-    .card-title { font-size: 1.15rem; font-weight: 600; margin-bottom: 0.5rem; color: #1e293b; display: flex; justify-content: space-between; align-items: center; }
-    .card-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem; }
-    .form-group { margin-bottom: 1.25rem; }
-    label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.4rem; color: #334155; }
-    input[type="text"], select, textarea { width: 100%; padding: 0.65rem 0.8rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; outline: none; background: #fff; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } .header-title-container { flex-direction: column; } }
-    .filters-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
-    .filter-btn { padding: 0.4rem 0.8rem; border: 1px solid var(--border); background: var(--card-bg); border-radius: 20px; font-size: 0.8rem; cursor: pointer; color: var(--text-muted); }
-    .filter-btn.active { background: #1e293b; color: #fff; border-color: #1e293b; }
-    .need-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; position: relative; }
-    .need-card.high-priority { background-color: var(--high-bg); border-color: var(--high-border); }
-    .need-card.medium-priority { background-color: var(--medium-bg); border-color: var(--medium-border); }
-    .need-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-    .badge { font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600; display: inline-block; }
-    .badge-colab { background: var(--colab-bg); color: var(--colab-text); }
-    .badge-dl54 { background: var(--dl54-bg); color: var(--dl54-text); }
-    .badge-high { background: #fee2e2; color: #991b1b; }
-    .badge-medium { background: #fef3c7; color: #92400e; }
-    .badge-normal { background: #e2e8f0; color: #475569; }
-    .badge-time { background: #f3f4f6; color: #374151; }
-    .badge-status { background: #dcfce7; color: #166534; }
-    .summary-box { background: #f1f5f9; padding: 0.75rem; border-radius: 6px; font-size: 0.85rem; color: #334155; margin: 0.75rem 0; border-left: 3px solid var(--primary); }
-    .doc-link-box { margin: 0.5rem 0; font-size: 0.85rem; background: #eff6ff; padding: 0.5rem 0.75rem; border-radius: 6px; border: 1px dashed #93c5fd; }
-    .doc-link-box a { color: var(--primary); text-decoration: none; font-weight: 600; }
-    .btn { background: var(--primary); color: white; border: none; padding: 0.65rem 1.2rem; border-radius: 6px; font-weight: 500; cursor: pointer; width: 100%; transition: background 0.2s; }
-    .btn:hover { background: var(--primary-hover); }
-    .btn-secondary { background: #64748b; }
-    .btn-secondary:hover { background: #475569; }
-    .toast { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; padding: 0.75rem 1.5rem; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: none; z-index: 1000; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      background-color: #E2E8F0;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--text);
+      transition: all 0.3s ease;
+    }
+
+    .tab-btn.active {
+      background-color: var(--secondary);
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    button.btn-primary {
+      background-color: var(--accent);
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      transition: background-color 0.2s;
+    }
+
+    button.btn-primary:hover {
+      background-color: #2C7A7B;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background-color: #FFF;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: white;
+    }
+
+    .badge-pendente { background-color: #DD6B20; }
+    .badge-execucao { background-color: var(--success); }
+
+    .summary-box {
+      background-color: #EDF2F7;
+      border-left: 4px solid var(--secondary);
+      padding: 15px;
+      margin-top: 15px;
+      border-radius: 4px;
+      position: relative;
+    }
+
+    .btn-copy {
+      background-color: var(--secondary);
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: bold;
+      margin-top: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-copy:hover {
+      background-color: var(--primary);
+    }
+
+    .copy-toast {
+      display: none;
+      color: var(--success);
+      font-size: 12px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    .file-link {
+      display: inline-block;
+      margin-top: 8px;
+      color: var(--secondary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .file-link:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="header-title-container">
-      <div class="header-info">
-        <h1>Centro de Apoio à Aprendizagem (CAA)</h1>
-        <p>Plataforma de Gestão e Triagem • DL 54/2018</p>
-      </div>
-      <div class="nav-tabs">
-        <button class="nav-tab active" onclick="switchTab('professores')">Entrada do Professor</button>
-        <button class="nav-tab" onclick="switchTab('gestao')">Gestão / Coordenação</button>
-      </div>
-    </div>
-  </header>
+  <div class="container">
+    <header>
+      <h1>Centro de Apoio à Aprendizagem (CAA)</h1>
+      <p>Apoio Colaborativo aos Docentes</p>
+    </header>
 
-  <!-- VISTA 1: PROFESSORES -->
-  <main id="view-professores" class="view-panel active">
-    <div class="card">
-      <div class="card-title">1. Identificação do Docente</div>
-      <div class="card-subtitle">Indique o seu nome para assumir apoios e consultar as suas tarefas ativas.</div>
-      <div class="form-group" style="margin-bottom: 0;">
-        <label for="profName">Nome do Professor com Horas no CAA:</label>
-        <input type="text" id="profName" placeholder="Ex: Maria João Santos" oninput="renderNeeds()">
-      </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('professores')">Área dos Professores CAA</button>
+      <button class="tab-btn" onclick="switchTab('gestao')">Gestão / Coordenação</button>
     </div>
 
-    <div class="card">
-      <div class="card-title">
-        <span>2. Apoios e Tarefas</span>
-        <button class="btn btn-secondary" onclick="fetchNeeds()" style="width: auto; padding: 0.3rem 0.8rem; font-size: 0.8rem;">🔄 Atualizar Lista</button>
-      </div>
-
-      <div class="form-row" style="margin-bottom: 1rem; background: #f1f5f9; padding: 0.75rem; border-radius: 8px;">
-        <div class="form-group" style="margin-bottom: 0;">
-          <label style="font-size: 0.8rem;">Ver Estado:</label>
-          <select id="filterEstado" onchange="renderNeeds()">
-            <option value="Pendente">Apoios Pendentes (Disponíveis)</option>
-            <option value="MeusApoios">Apoios Assumidos por Mim</option>
-          </select>
-        </div>
-        <div class="form-group" style="margin-bottom: 0;">
-          <label style="font-size: 0.8rem;">Dia da Semana:</label>
-          <select id="filterDia" onchange="renderNeeds()">
-            <option value="Todos">Ver Todos os Dias</option>
-            <option value="2.ª feira">2.ª feira</option>
-            <option value="3.ª feira">3.ª feira</option>
-            <option value="4.ª feira">4.ª feira</option>
-            <option value="5.ª feira">5.ª feira</option>
-            <option value="6.ª feira">6.ª feira</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="filters-bar">
-        <button class="filter-btn active" onclick="filterNeeds('all', this)">Todos os Tipos</button>
-        <button class="filter-btn" onclick="filterNeeds('Reforço Pedagógico', this)">Apenas DL 54</button>
-        <button class="filter-btn" onclick="filterNeeds('Apoio Colaborativo', this)">Apoio Colaborativo aos Docentes</button>
-      </div>
-
-      <div id="loading" style="text-align: center; color: var(--text-muted); padding: 2rem; display: none;">A carregar pedidos do CAA...</div>
-      <div id="needsContainer"></div>
+    <!-- ÁREA DOS PROFESSORES -->
+    <div id="professores" class="tab-content active">
+      <h2>Necessidades de Apoio Disponíveis</h2>
+      <p style="margin-bottom: 15px; color: #718096;">Consulte as solicitações pendentes, assuma os apoios e copie os sumários diretamente.</p>
+      <div id="lista-necessidades-prof">Carregando pedidos...</div>
     </div>
-  </main>
 
-  <!-- VISTA 2: GESTÃO -->
-  <main id="view-gestao" class="view-panel">
-    <div class="card">
-      <div class="card-title">Registar Nova Necessidade de Apoio</div>
-      <div class="card-subtitle">Formulário exclusivo para a Coordenação do CAA ou Diretores de Turma solicitarem intervenção.</div>
-
-      <form id="newNeedForm" onsubmit="handleNewNeed(event)">
+    <!-- ÁREA DE GESTÃO -->
+    <div id="gestao" class="tab-content">
+      <h2>Registar Nova Necessidade / Atividade</h2>
+      <form id="form-gestao" onsubmit="submeterNecessidade(event)">
         <div class="form-group">
-          <label for="tipoValência">Tipo de Valência:</label>
-          <select id="tipoValência" required>
-            <option value="Reforço Pedagógico (DL 54/2018)">Reforço Pedagógico (DL 54/2018)</option>
-            <option value="Apoio Colaborativo aos Docentes">Apoio Colaborativo aos Docentes</option>
-            <option value="Apoio aos Diretores de Turma em relação à Educação para a Cidadania">Apoio aos Diretores de Turma em relação à Educação para a Cidadania</option>
+          <label>Tipo de Valência:</label>
+          <select id="tipoValencia" required>
+            <option value="Apoio Pedagógico Acrescido">Apoio Pedagógico Acrescido</option>
+            <option value="Apoio Tutorias">Apoio Tutorias</option>
+            <option value="Apoio à Educação para a Cidadania">Apoio à Educação para a Cidadania</option>
+            <option value="Outro">Outro</option>
           </select>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="diaSemana">Dia da Semana Pretendido:</label>
-            <select id="diaSemana" required>
-              <option value="2.ª feira">2.ª feira</option>
-              <option value="3.ª feira">3.ª feira</option>
-              <option value="4.ª feira">4.ª feira</option>
-              <option value="5.ª feira">5.ª feira</option>
-              <option value="6.ª feira">6.ª feira</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="tempoLetivo">Tempo Letivo:</label>
-            <select id="tempoLetivo" required>
-              <option value="Tempo 1 (8h30-9h20)">Tempo 1 (8h30-9h20)</option>
-              <option value="Tempo 2 (9h25-10h15)">Tempo 2 (9h25-10h15)</option>
-              <option value="Tempo 3 (10h30-11h20)">Tempo 3 (10h30-11h20)</option>
-              <option value="Tempo 4 (11h25-12h15)">Tempo 4 (11h25-12h15)</option>
-              <option value="Tempo 5 (12h20-13h10)">Tempo 5 (12h20-13h10)</option>
-              <option value="Tempo 6 (13h20-14h10)">Tempo 6 (13h20-14h10)</option>
-              <option value="Tempo 7 (14h15-15h05)">Tempo 7 (14h15-15h05)</option>
-              <option value="Tempo 8 (15h15-16h05)">Tempo 8 (15h15-16h05)</option>
-              <option value="Tempo 9 (16h10-17h00)">Tempo 9 (16h10-17h00)</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="anoEscolaridade">Ano de Escolaridade:</label>
-            <select id="anoEscolaridade" required>
-              <option value="1.º Ano">1.º Ano</option>
-              <option value="2.º Ano">2.º Ano</option>
-              <option value="3.º Ano">3.º Ano</option>
-              <option value="4.º Ano">4.º Ano</option>
-              <option value="5.º Ano">5.º Ano</option>
-              <option value="6.º Ano">6.º Ano</option>
-              <option value="7.º Ano">7.º Ano</option>
-              <option value="8.º Ano">8.º Ano</option>
-              <option value="9.º Ano">9.º Ano</option>
-              <option value="10.º Ano">10.º Ano</option>
-              <option value="11.º Ano">11.º Ano</option>
-              <option value="12.º Ano">12.º Ano</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="turmaAluno">Turma:</label>
-            <input type="text" id="turmaAluno" placeholder="Ex: A, B, C ou CEF..." oninput="this.value = this.value.toUpperCase()" required>
-          </div>
+        <div class="form-group">
+          <label>Dia da Semana e Tempo Letivo:</label>
+          <input type="text" id="diaTempo" placeholder="Ex: Terça-feira - 3º Tempo" required>
         </div>
 
         <div class="form-group">
-          <label for="nomeDetalhe">Nome do Aluno / Disciplina / Grupo / Projeto:</label>
-          <input type="text" id="nomeDetalhe" placeholder="Ex: João Silva (Matemática) ou Projeto Cidadania" required>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="localizacao">Localização / Sala:</label>
-            <input type="text" id="localizacao" placeholder="Ex: Sala CAA, Sala 12, etc." required>
-          </div>
-          <div class="form-group">
-            <label for="prioridade">Nível de Prioridade:</label>
-            <select id="prioridade" required>
-              <option value="Normal">Normal</option>
-              <option value="Média">Média</option>
-              <option value="Alta">Alta</option>
-            </select>
-          </div>
+          <label>Entidade Alvo (Ano / Turma / Alunos):</label>
+          <input type="text" id="entidadeAlvo" placeholder="Ex: 7ºA / Grupo X" required>
         </div>
 
         <div class="form-group">
-          <label for="descricaoObjetivos">Descrição das Tarefas / Objetivos / Conteúdos:</label>
-          <textarea id="descricaoObjetivos" rows="3" placeholder="Pormenorize o trabalho a desenvolver com o aluno ou turma..." required></textarea>
+          <label>Localização / Sala:</label>
+          <input type="text" id="localizacao" placeholder="Ex: Sala CAA 2" required>
         </div>
 
         <div class="form-group">
-          <label for="ficheiroAnexo">Anexar Documento / Ficha de Apoio (Opcional):</label>
-          <input type="file" id="ficheiroAnexo" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
+          <label>Prioridade:</label>
+          <select id="prioridade">
+            <option value="Normal">Normal</option>
+            <option value="Alta">Alta</option>
+            <option value="Urgente">Urgente</option>
+          </select>
         </div>
 
-        <button type="submit" id="btnSubmitForm" class="btn">Registar Necessidade</button>
+        <div class="form-group">
+          <label>Descrição / Objetivos do Apoio:</label>
+          <textarea id="descricaoObjetivos" rows="4" placeholder="Descreva sucintamente as metas para a sessão..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Anexar Documento / Ficha de Apoio (Opcional):</label>
+          <input type="file" id="ficheiroAnexo">
+        </div>
+
+        <button type="submit" class="btn-primary" id="btn-submit">Submeter Pedido</button>
       </form>
     </div>
-  </main>
-
-  <div id="toast" class="toast">Sumário copiado com sucesso!</div>
+  </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTM3Ps2cD5SSNYhNkxMbEWDMPWfOikrVKp48lhY9HVHa7nbM7J0nsg06yial7jZ_zz/exec";
+    // URL do teu Google Apps Script
+    const SCRIPT_URL = "SUBS_AQUI_O_TEU_URL_DO_APPS_SCRIPT";
 
-    let needsData = [];
-    let currentFilter = 'all';
-
-    window.onload = function() {
-      document.getElementById('filterDia').value = "Todos";
-      document.getElementById('filterEstado').value = "Pendente";
-      fetchNeeds();
-    };
-
-    function switchTab(tab) {
-      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.view-panel').forEach(v => v.classList.remove('active'));
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
       
-      if(tab === 'professores') {
-        document.querySelectorAll('.nav-tab')[0].classList.add('active');
-        document.getElementById('view-professores').classList.add('active');
-        fetchNeeds();
-      } else {
-        document.querySelectorAll('.nav-tab')[1].classList.add('active');
-        document.getElementById('view-gestao').classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+
+      if (tabId === 'professores') {
+        carregarNecessidades();
       }
     }
 
-    async function fetchNeeds() {
-      const container = document.getElementById('needsContainer');
-      const loading = document.getElementById('loading');
-      loading.style.display = 'block';
-      container.innerHTML = '';
+    async function carregarNecessidades() {
+      const container = document.getElementById('lista-necessidades-prof');
+      container.innerHTML = "Carregando pedidos...";
 
       try {
-        const res = await fetch(`${SCRIPT_URL}?action=getNecessidades`);
-        needsData = await res.json();
-        loading.style.display = 'none';
-        renderNeeds();
-      } catch (err) {
-        loading.innerHTML = 'Erro ao carregar dados do Google Sheets. Verifique a ligação.';
-      }
-    }
+        const res = await fetch(SCRIPT_URL + "?action=getNecessidades");
+        const data = await res.json();
 
-    function filterNeeds(type, btn) {
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentFilter = type;
-      renderNeeds();
-    }
-
-    function renderNeeds() {
-      const container = document.getElementById('needsContainer');
-      container.innerHTML = '';
-
-      const filterDia = document.getElementById('filterDia').value;
-      const filterEstado = document.getElementById('filterEstado').value;
-      const profName = (document.getElementById('profName')?.value || '').trim().toLowerCase();
-
-      const filtered = needsData.filter(item => {
-        const estado = (item.estado || '').toString().trim();
-        const profAssumiu = (item.profAssumiu || '').toString().toLowerCase();
-
-        if (filterEstado === 'Pendente') {
-          if (estado !== 'Pendente') return false;
-        } else if (filterEstado === 'MeusApoios') {
-          if (estado === 'Pendente') return false;
-          if (profName && !profAssumiu.includes(profName)) return false;
+        if (data.length === 0) {
+          container.innerHTML = "<p>Não existem registos no momento.</p>";
+          return;
         }
 
-        if (currentFilter !== 'all' && !(item.tipoValência || '').includes(currentFilter)) return false;
-        if (filterDia !== 'Todos' && item.diaSemana && item.diaSemana !== filterDia) return false;
+        container.innerHTML = "";
+        data.forEach(item => {
+          const isPendente = item.estado === "Pendente";
+          
+          // Formatação do Sumário padrão para os professores copiarem
+          const textoSumario = `Apoio CAA (${item.tipoValência}) - ${item.entidadeAlvo}. Objetivos: ${item.descricaoObjetivos}. Local: ${item.localizacao}.`;
 
-        return true;
-      });
-
-      if (filtered.length === 0) {
-        if (filterEstado === 'MeusApoios' && !profName) {
-          container.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Por favor, escreva o seu nome no campo acima para filtrar os seus apoios assumidos.</p>';
-        } else {
-          container.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Não existem apoios a apresentar com os filtros selecionados.</p>';
-        }
-        return;
-      }
-
-      filtered.forEach(item => {
-        const prio = (item.prioridade || 'Normal').toString().trim();
-        const isHigh = prio === 'Alta';
-        const isMedium = prio === 'Média';
-        
-        let prioBadgeClass = 'badge-normal';
-        if (isHigh) prioBadgeClass = 'badge-high';
-        if (isMedium) prioBadgeClass = 'badge-medium';
-
-        const isColab = (item.tipoValência || '').includes('Apoio Colaborativo');
-        const isAssumido = item.estado !== 'Pendente';
-        const summaryText = generateDraftSummary(item.tipoValência, item.entidadeAlvo, item.descricaoObjetivos, item.localizacao);
-
-        let docHtml = '';
-        if (item.urlDocumento && item.urlDocumento.toString().startsWith('http')) {
-          docHtml = `<div class="doc-link-box">📎 <b>Documento Anexo:</b> <a href="${item.urlDocumento}" target="_blank" rel="noopener noreferrer">Abrir / Descarregar Ficheiro</a></div>`;
-        }
-
-        let cardClass = 'need-card';
-        if (isHigh) cardClass += ' high-priority';
-        if (isMedium) cardClass += ' medium-priority';
-
-        const card = document.createElement('div');
-        card.className = cardClass;
-        card.innerHTML = `
-          <div class="need-header">
-            <div>
-              <span class="badge ${isColab ? 'badge-colab' : 'badge-dl54'}">${isColab ? 'Apoio Colaborativo' : 'DL 54/2018'}</span>
-              <span class="badge badge-time">📅 ${item.diaSemana || 'N/A'} • ${item.tempoLetivo || 'Geral'}</span>
-              <span class="badge ${prioBadgeClass}">Prioridade ${prio}</span>
-              ${isAssumido ? '<span class="badge badge-status">Em Execução</span>' : ''}
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <div class="card-header">
+              <span>${item.tipoValência} - ${item.entidadeAlvo}</span>
+              <span class="badge ${isPendente ? 'badge-pendente' : 'badge-execucao'}">${item.estado}</span>
             </div>
-            <span style="font-size: 0.8rem; color: var(--text-muted);"><b>Local:</b> ${item.localizacao || 'Não especificado'}</span>
-          </div>
-          <h3 style="font-size: 1.05rem; margin: 0.4rem 0;">${item.entidadeAlvo || 'Sem identificação'}</h3>
-          <p style="font-size: 0.875rem; color: #334155;"><b>Descrição / Tarefas:</b> ${item.descricaoObjetivos || 'Sem descrição.'}</p>
-          ${docHtml}
-          <div class="summary-box" id="sum-${item.idPedido}">${summaryText}</div>
-          ${isAssumido ? 
-            `<button class="btn btn-secondary" onclick="copySummaryOnly('${item.idPedido}')">Copiar Sumário Novamente</button>` : 
-            `<button class="btn" onclick="takeSupport('${item.idPedido}')">Assumir Apoio e Copiar Sumário</button>`
-          }
-        `;
-        container.appendChild(card);
+            <p><strong>Horário:</strong> ${item.diaSemana} | ${item.tempoLetivo || ''}</p>
+            <p><strong>Local:</strong> ${item.localizacao}</p>
+            <p><strong>Prioridade:</strong> ${item.prioridade}</p>
+            <p><strong>Descrição:</strong> ${item.descricaoObjetivos}</p>
+            
+            ${item.urlDocumento ? `<p><a href="${item.urlDocumento}" target="_blank" class="file-link">📄 Ver / Transferir Documento Anexo</a></p>` : ''}
+            
+            ${!isPendente ? `<p style="margin-top:8px;"><strong>Prof. Responsável:</strong> ${item.profAssumiu}</p>` : ''}
+
+            <!-- CAIXA COM O SUMÁRIO E BOTÃO DE COPIAR -->
+            <div class="summary-box">
+              <strong>Sumário Sugerido para o Caderneta / Sumário Eletrónico:</strong>
+              <p id="sumario-text-${item.linhaExcel}" style="margin-top: 5px; font-style: italic;">${textoSumario}</p>
+              <button class="btn-copy" onclick="copiarSumario('sumario-text-${item.linhaExcel}', 'toast-${item.linhaExcel}')">
+                📋 Copiar Sumário
+              </button>
+              <span id="toast-${item.linhaExcel}" class="copy-toast">✓ Copiado!</span>
+            </div>
+
+            ${isPendente ? `
+              <div style="margin-top: 15px;">
+                <input type="text" id="prof-nome-${item.linhaExcel}" placeholder="O seu nome" style="width:70%; display:inline-block;">
+                <button onclick="assumirApoio(${item.linhaExcel})" style="width:28%; padding:10px; background-color:var(--success); color:white; border:none; border-radius:6px; cursor:pointer;">Assumir</button>
+              </div>
+            ` : ''}
+          `;
+          container.appendChild(card);
+        });
+
+      } catch (err) {
+        container.innerHTML = "<p>Erro ao carregar os dados. Verifique a ligação ao script.</p>";
+      }
+    }
+
+    function copiarSumario(elementId, toastId) {
+      const textToCopy = document.getElementById(elementId).innerText;
+      
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        const toast = document.getElementById(toastId);
+        toast.style.display = 'inline';
+        setTimeout(() => {
+          toast.style.display = 'none';
+        }, 2500);
+      }).catch(err => {
+        alert("Erro ao copiar. Selecione o texto manualmente.");
       });
     }
 
-    function generateDraftSummary(valencia, entidade, objetivos, localizacao) {
-      const val = valencia || '';
-      const ent = entidade || 'Não especificado';
-      const obj = objetivos || 'Atividades e conteúdos programáticos previstos para a sessão.';
-      const loc = localizacao ? ` (Local: ${localizacao})` : '';
-
-      if (val.includes("Reforço Pedagógico")) {
-        return `[Apoio CAA - Art.º 13.º, n.º 3, al. a)] Apoio pedagógico prestado a: ${ent}${loc}. Consolidação de conteúdos e trabalho orientado focado em: ${obj}.`;
-      } else if (val.includes("Apoio Colaborativo")) {
-        return `[Apoio Colaborativo aos Docentes: Art.º 13.º, n.º 3, al. b)] Apoio colaborativo / coadjuvação em articulação com: ${ent}${loc}. Âmbito e tarefas desenvolvidas: ${obj}.`;
-      } else {
-        return `[Apoio CAA - DL 54/2018] Apoio pedagógico no CAA prestado a: ${ent}${loc}. Objetivos e tarefas desenvolvidas: ${obj}.`;
-      }
-    }
-
-    async function takeSupport(idPedido) {
-      const profNameInput = document.getElementById('profName');
-      const profName = profNameInput ? profNameInput.value.trim() : '';
-
-      if (!profName) {
-        alert("Por favor, preencha o seu nome no topo da página antes de assumir o apoio.");
-        if (profNameInput) profNameInput.focus();
-        return;
-      }
-
-      const item = needsData.find(n => String(n.idPedido) === String(idPedido));
-      if (!item) {
-        alert("Erro ao identificar a tarefa. Por favor atualize a lista.");
+    async function assumirApoio(linhaExcel) {
+      const nomeProf = document.getElementById(`prof-nome-${linhaExcel}`).value.trim();
+      if (!nomeProf) {
+        alert("Por favor, introduza o seu nome para assumir o apoio.");
         return;
       }
 
       const payload = {
         action: "assumirApoio",
         payload: {
-          idPedido: item.idPedido,
-          linhaExcel: item.linhaExcel,
-          nomeProfessor: profName,
-          tipoValência: item.tipoValência,
-          entidadeAlvo: item.entidadeAlvo,
-          descricaoObjetivos: item.descricaoObjetivos,
+          linhaExcel: linhaExcel,
+          nomeProfessor: nomeProf,
           dataAssumido: new Date().toLocaleString('pt-PT')
         }
       };
 
       try {
         await fetch(SCRIPT_URL, {
-          method: 'POST',
+          method: "POST",
           body: JSON.stringify(payload)
         });
-
-        const sumBox = document.getElementById(`sum-${idPedido}`);
-        if (sumBox) {
-          await navigator.clipboard.writeText(sumBox.innerText);
-        }
-        
-        showToast("Sumário copiado! Pode colar no Inovar Alunos.");
-        fetchNeeds();
-      } catch (err) {
-        alert("Erro ao registar o apoio. Verifique a ligação.");
+        alert("Apoio assumido com sucesso!");
+        carregarNecessidades();
+      } catch (e) {
+        alert("Erro ao guardar alteração.");
       }
     }
 
-    async function copySummaryOnly(idPedido) {
-      const sumBox = document.getElementById(`sum-${idPedido}`);
-      if (sumBox) {
-        await navigator.clipboard.writeText(sumBox.innerText);
-        showToast("Sumário copiado!");
-      }
-    }
-
-    async function handleNewNeed(e) {
+    async function submeterNecessidade(e) {
       e.preventDefault();
-      const btn = document.getElementById('btnSubmitForm');
-      btn.innerText = "A guardar necessidade...";
+      const btn = document.getElementById('btn-submit');
+      btn.innerText = "A guardar...";
       btn.disabled = true;
 
-      try {
-        const ano = document.getElementById('anoEscolaridade').value;
-        const turma = document.getElementById('turmaAluno').value.trim().toUpperCase();
-        const detalhe = document.getElementById('nomeDetalhe').value.trim();
-        
-        let entidadeFormatada = `${ano} ${turma}`;
-        if (detalhe) entidadeFormatada += ` - ${detalhe}`;
+      const fileInput = document.getElementById('ficheiroAnexo');
+      let fileData = null;
+      let fileName = null;
+      let mimeType = null;
 
-        const fileInput = document.getElementById('ficheiroAnexo');
-        let fileData = null;
-        let fileName = "";
-        let mimeType = "";
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        fileName = file.name;
+        mimeType = file.type;
+        fileData = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        });
+      }
 
-        if (fileInput && fileInput.files.length > 0) {
-          const file = fileInput.files[0];
-          fileName = file.name;
-          mimeType = file.type;
-          fileData = await readFileAsBase64(file);
+      const payload = {
+        action: "novaNecessidade",
+        payload: {
+          tipoValência: document.getElementById('tipoValencia').value,
+          diaSemana: document.getElementById('diaTempo').value,
+          tempoLetivo: "",
+          entidadeAlvo: document.getElementById('entidadeAlvo').value,
+          localizacao: document.getElementById('localizacao').value,
+          prioridade: document.getElementById('prioridade').value,
+          descricaoObjetivos: document.getElementById('descricaoObjetivos').value,
+          fileData: fileData,
+          fileName: fileName,
+          mimeType: mimeType,
+          dataRegisto: new Date().toLocaleString('pt-PT')
         }
+      };
 
-        const payload = {
-          action: "novaNecessidade",
-          payload: {
-            dataRegisto: new Date().toLocaleString('pt-PT'),
-            tipoValência: document.getElementById('tipoValência').value,
-            diaSemana: document.getElementById('diaSemana').value,
-            tempoLetivo: document.getElementById('tempoLetivo').value,
-            entidadeAlvo: entidadeFormatada,
-            localizacao: document.getElementById('localizacao').value,
-            prioridade: document.getElementById('prioridade').value,
-            descricaoObjetivos: document.getElementById('descricaoObjetivos').value,
-            fileData: fileData,
-            fileName: fileName,
-            mimeType: mimeType
-          }
-        };
-
+      try {
         await fetch(SCRIPT_URL, {
-          method: 'POST',
+          method: "POST",
           body: JSON.stringify(payload)
         });
-
-        showToast("Necessidade registrada com sucesso!");
-        document.getElementById('newNeedForm').reset();
+        alert("Necessidade registada com sucesso!");
+        document.getElementById('form-gestao').reset();
         switchTab('professores');
       } catch (err) {
-        alert("Erro ao guardar a necessidade: " + err.message);
+        alert("Erro ao submeter registo.");
       } finally {
-        btn.innerText = "Registar Necessidade";
+        btn.innerText = "Submeter Pedido";
         btn.disabled = false;
       }
     }
 
-    function readFileAsBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-        reader.readAsDataURL(file);
-      });
-    }
-
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      toast.innerText = msg;
-      toast.style.display = 'block';
-      setTimeout(() => { toast.style.display = 'none'; }, 3500);
-    }
+    // Carregar a lista automaticamente ao abrir a página
+    carregarNecessidades();
   </script>
 </body>
 </html>
