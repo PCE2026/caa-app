@@ -201,22 +201,23 @@
           <button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="fetchNeeds()">🔄 Atualizar Lista</button>
         </div>
 
-        <!-- SELETOR DE HORÁRIO ATIVO -->
+        <!-- SELETOR DE FILTROS (POR DEFEITO MOSTRA TODOS) -->
         <div class="schedule-picker">
           <div style="flex: 1;">
             <label for="filterDia">Dia da Semana:</label>
             <select id="filterDia" onchange="renderNeeds()">
+              <option value="Todos" selected>Ver Todos os Dias</option>
               <option value="2.ª feira">2.ª feira</option>
               <option value="3.ª feira">3.ª feira</option>
               <option value="4.ª feira">4.ª feira</option>
               <option value="5.ª feira">5.ª feira</option>
               <option value="6.ª feira">6.ª feira</option>
-              <option value="Todos">Ver Todos os Dias</option>
             </select>
           </div>
           <div style="flex: 2;">
             <label for="filterTempo">Tempo Letivo:</label>
             <select id="filterTempo" onchange="renderNeeds()">
+              <option value="Todos" selected>Ver Todos os Tempos</option>
               <option value="1 (8h30-9h20)">1- 8h30-9h20</option>
               <option value="2 (9h30-10h20)">2- 9h30-10h20</option>
               <option value="3 (10h40-11h30)">3- 10h40-11h30</option>
@@ -227,7 +228,6 @@
               <option value="8 (15h35-16h25)">8- 15h35-16h25</option>
               <option value="9 (16h35-17h25)">9- 16h35-17h25</option>
               <option value="10 (17h35-18h25)">10- 17h35-18h25</option>
-              <option value="Todos">Ver Todos os Tempos</option>
             </select>
           </div>
         </div>
@@ -335,7 +335,6 @@
             <textarea id="descricaoObjetivos" rows="3" placeholder="Escreva os objetivos breves para orientar o professor..." required></textarea>
           </div>
 
-          <!-- CAMPO PARA ANEXAR DOCUMENTO -->
           <div class="form-group">
             <label for="ficheiroAnexo">Anexar Documento de Apoio (Opcional - PDF, Word, Imagem):</label>
             <input type="file" id="ficheiroAnexo" accept=".pdf,.doc,.docx,.jpg,.png">
@@ -356,32 +355,11 @@
     let currentFilter = 'all';
 
     window.onload = function() {
-      autoDetectSchedule();
+      // Define por defeito 'Todos' para ver todas as tarefas ao carregar a página
+      document.getElementById('filterDia').value = "Todos";
+      document.getElementById('filterTempo').value = "Todos";
       fetchNeeds();
     };
-
-    function autoDetectSchedule() {
-      const now = new Date();
-      const day = now.getDay();
-      
-      const daysMap = { 1: "2.ª feira", 2: "3.ª feira", 3: "4.ª feira", 4: "5.ª feira", 5: "6.ª feira" };
-      document.getElementById('filterDia').value = daysMap[day] || "Todos";
-
-      const minutes = now.getHours() * 60 + now.getMinutes();
-      let tempo = "Todos";
-      if (minutes >= 510 && minutes < 570) tempo = "1 (8h30-9h20)";
-      else if (minutes >= 570 && minutes < 630) tempo = "2 (9h30-10h20)";
-      else if (minutes >= 630 && minutes < 700) tempo = "3 (10h40-11h30)";
-      else if (minutes >= 700 && minutes < 760) tempo = "4 (11h40-12h30)";
-      else if (minutes >= 760 && minutes < 810) tempo = "5 (12h40-13h30)";
-      else if (minutes >= 810 && minutes < 870) tempo = "6 (13h30-14h20)";
-      else if (minutes >= 870 && minutes < 930) tempo = "7 (14h30-15h20)";
-      else if (minutes >= 935 && minutes < 990) tempo = "8 (15h35-16h25)";
-      else if (minutes >= 995 && minutes < 1050) tempo = "9 (16h35-17h25)";
-      else if (minutes >= 1055 && minutes < 1110) tempo = "10 (17h35-18h25)";
-
-      document.getElementById('filterTempo').value = tempo;
-    }
 
     function switchTab(tab) {
       document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -429,17 +407,23 @@
 
       const filtered = needsData.filter(item => {
         const estado = (item.estado || '').toString().trim().toLowerCase();
+        // Oculta tarefas que já foram assumidas ou concluídas
         if (estado === 'em execução' || estado === 'concluído') return false;
         
+        // Aplica o filtro de tipo (DL 54 vs Colaborativo)
         if (currentFilter !== 'all' && !item.tipoValência.includes(currentFilter)) return false;
+
+        // Se o utilizador filtrar por um dia específico
         if (filterDia !== 'Todos' && item.diaSemana && item.diaSemana !== filterDia) return false;
+
+        // Se o utilizador filtrar por um tempo específico
         if (filterTempo !== 'Todos' && item.tempoLetivo && item.tempoLetivo !== filterTempo) return false;
 
         return true;
       });
 
       if (filtered.length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Não existem apoios pendentes para o horário/filtros selecionados.</p>';
+        container.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Não existem apoios pendentes com os filtros selecionados.</p>';
         return;
       }
 
@@ -459,7 +443,7 @@
           <div class="need-header">
             <div>
               <span class="badge ${isColab ? 'badge-colab' : 'badge-dl54'}">${isColab ? 'Apoio Colaborativo' : 'DL 54/2018'}</span>
-              <span class="badge badge-time">📅 ${item.diaSemana || 'N/A'} • Tempo ${item.tempoLetivo || ''}</span>
+              <span class="badge badge-time">📅 ${item.diaSemana || 'N/A'} • Tempo ${item.tempoLetivo || 'Geral'}</span>
               ${isHigh ? '<span class="badge badge-priority">Prioridade Alta</span>' : ''}
             </div>
             <span style="font-size: 0.8rem; color: var(--text-muted);"><b>Local:</b> ${item.localizacao}</span>
