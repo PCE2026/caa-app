@@ -332,8 +332,8 @@
         const summaryText = generateDraftSummary(item.tipoValência, item.entidadeAlvo, item.descricaoObjetivos, item.localizacao);
 
         let docHtml = '';
-        if (item.urlDocumento) {
-          docHtml = `<div class="doc-link-box">📎 <b>Documento Anexo:</b> <a href="${item.urlDocumento}" target="_blank">Abrir / Descarregar Ficheiro</a></div>`;
+        if (item.urlDocumento && item.urlDocumento.toString().startsWith('http')) {
+          docHtml = `<div class="doc-link-box">📎 <b>Documento Anexo:</b> <a href="${item.urlDocumento}" target="_blank" rel="noopener noreferrer">Abrir / Descarregar Ficheiro</a></div>`;
         }
 
         let cardClass = 'need-card';
