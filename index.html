@@ -356,7 +356,7 @@
           <label>Tipo de Valência:</label>
           <select id="tipoValência" required>
             <option value="Reforço Pedagógico (DL 54/2018)">Reforço Pedagógico (DL 54/2018)</option>
-            <option value="Apoio Colaborativo ao Docente">Apoio Colaborativo ao Docente</option>
+            <option value="Apoio Colaborativo aos Docentes">Apoio Colaborativo aos Docentes</option>
             <option value="Apoio aos Diretores de Turma (Cidadania)">Apoio aos Diretores de Turma (Cidadania)</option>
           </select>
         </div>
@@ -391,7 +391,6 @@
         <div class="form-row">
           <div class="form-group">
             <label>Ano de Escolaridade:</label>
-
             <select id="anoEscolaridade" required>
               <option value="1.º Ano">1.º Ano</option>
               <option value="2.º Ano">2.º Ano</option>
@@ -509,7 +508,7 @@
         const estado = (item.estado || '').toString().trim().toLowerCase();
         if (estado === 'em execução' || estado === 'concluído') return false;
         
-        if (currentFilter !== 'all' && !item.tipoValência.includes(currentFilter)) return false;
+        if (currentFilter !== 'all' && !(item.tipoValência || '').includes(currentFilter)) return false;
         if (filterDia !== 'Todos' && item.diaSemana && item.diaSemana !== filterDia) return false;
         if (filterTempo !== 'Todos' && item.tempoLetivo && item.tempoLetivo !== filterTempo) return false;
 
@@ -523,8 +522,8 @@
 
       filtered.forEach(item => {
         const isHigh = item.prioridade === 'Alta';
-        const isColab = item.tipoValência.includes('Apoio Colaborativo');
-        const summaryText = generateDraftSummary(item.tipoValência, item.entidadeAlvo, item.descricaoObjetivos);
+        const isColab = (item.tipoValência || '').includes('Apoio Colaborativo');
+        const summaryText = generateDraftSummary(item.tipoValência, item.entidadeAlvo, item.descricaoObjetivos, item.localizacao);
 
         let docHtml = '';
         if (item.urlDocumento) {
@@ -540,10 +539,10 @@
               <span class="badge badge-time">📅 ${item.diaSemana || 'N/A'} • Tempo ${item.tempoLetivo || 'Geral'}</span>
               ${isHigh ? '<span class="badge badge-priority">Prioridade Alta</span>' : ''}
             </div>
-            <span style="font-size: 0.8rem; color: var(--text-muted);"><b>Local:</b> ${item.localizacao}</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted);"><b>Local:</b> ${item.localizacao || 'Não especificado'}</span>
           </div>
-          <h3 style="font-size: 1.05rem; margin: 0.4rem 0;">${item.entidadeAlvo}</h3>
-          <p style="font-size: 0.875rem; color: #334155;">${item.descricaoObjetivos}</p>
+          <h3 style="font-size: 1.05rem; margin: 0.4rem 0;">${item.entidadeAlvo || 'Sem identificação'}</h3>
+          <p style="font-size: 0.875rem; color: #334155;"><b>Descrição / Tarefas:</b> ${item.descricaoObjetivos || 'Sem descrição.'}</p>
           ${docHtml}
           <div class="summary-box" id="sum-${item.idPedido}">${summaryText}</div>
           <button class="btn" onclick="takeSupport('${item.idPedido}')">Assumir Apoio e Copiar Sumário</button>
@@ -552,13 +551,18 @@
       });
     }
 
-    function generateDraftSummary(valencia, entidade, objetivos) {
-      if (valencia.includes("Reforço Pedagógico")) {
-        return `[Apoio CAA - Art.º 13.º, n.º 3, al. a)] Apoio pedagógico prestado a: ${entidade}. Consolidação de conteúdos e trabalho orientado focado em: ${objetivos}.`;
-      } else if (valencia.includes("Apoio Colaborativo")) {
-        return `[Apoio CAA - Art.º 13.º, n.º 3, al. b)] Apoio colaborativo / coadjuvação em articulação com: ${entidade}. Âmbito: ${objetivos}.`;
+    function generateDraftSummary(valencia, entidade, objetivos, localizacao) {
+      const val = valencia || '';
+      const ent = entidade || 'Não especificado';
+      const obj = objetivos || 'Atividades e conteúdos programáticos previstos para a sessão.';
+      const loc = localizacao ? ` (Local: ${localizacao})` : '';
+
+      if (val.includes("Reforço Pedagógico")) {
+        return `[Apoio CAA - Art.º 13.º, n.º 3, al. a)] Apoio pedagógico prestado a: ${ent}${loc}. Consolidação de conteúdos e trabalho orientado focado em: ${obj}.`;
+      } else if (val.includes("Apoio Colaborativo")) {
+        return `[Apoio CAA - Art.º 13.º, n.º 3, al. b)] Apoio colaborativo / coadjuvação em articulação com: ${ent}${loc}. Âmbito e tarefas desenvolvidas: ${obj}.`;
       } else {
-        return `[Apoio CAA - DL 54/2018] Apoio pedagógico no CAA prestado a: ${entidade}. Objetivos: ${objetivos}.`;
+        return `[Apoio CAA - DL 54/2018] Apoio pedagógico no CAA prestado a: ${ent}${loc}. Objetivos e tarefas desenvolvidas: ${obj}.`;
       }
     }
 
@@ -596,7 +600,6 @@
           method: 'POST',
           body: JSON.stringify(payload)
         });
-        const result = await res.json();
 
         const sumBox = document.getElementById(`sum-${idPedido}`);
         if (sumBox) {
