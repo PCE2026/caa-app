@@ -443,7 +443,6 @@
             </div>
           </div>
         `;
-        // Focar automaticamente no campo de texto
         setTimeout(() => {
           const input = document.getElementById(`prof-nome-${linhaExcel}`);
           if (input) input.focus();
@@ -469,7 +468,10 @@
         container.innerHTML = "";
         data.forEach((item, index) => {
           const badgeClass = getPriorityClass(item.prioridade);
-          const temProf = item.profAssumiu && item.profAssumiu.toString().trim() !== "";
+          
+          // CORREÇÃO DA VALIDAÇÃO: Ignora se for vazio, nulo ou "Pendente"
+          const valProf = item.profAssumiu ? item.profAssumiu.toString().trim() : "";
+          const temProf = valProf !== "" && valProf.toLowerCase() !== "pendente";
 
           const card = document.createElement('div');
           card.className = 'card';
@@ -528,6 +530,9 @@
         container.innerHTML = "";
         data.forEach(item => {
           const badgeClass = getPriorityClass(item.prioridade);
+          const valProf = item.profAssumiu ? item.profAssumiu.toString().trim() : "";
+          const temProf = valProf !== "" && valProf.toLowerCase() !== "pendente";
+
           const card = document.createElement('div');
           card.className = 'card';
           card.innerHTML = `
@@ -537,7 +542,7 @@
             </div>
             <p><strong>Tipo:</strong> ${item.tipoValencia || ''}</p>
             <p><strong>Entidade:</strong> ${item.entidadeAlvo || ''}</p>
-            <p><strong>Docente Responsável:</strong> ${item.profAssumiu ? item.profAssumiu : '<em>Ainda não assumido</em>'}</p>
+            <p><strong>Docente Responsável:</strong> ${temProf ? item.profAssumiu : '<em>Ainda não assumido</em>'}</p>
             <div class="ficheiro-box">
               <strong>Anexo:</strong> ${item.urlDocumento && item.urlDocumento.toString().trim().startsWith('http') ? `<a href="${item.urlDocumento}" target="_blank" class="file-link">Ver Documento</a>` : 'Nenhum'}
             </div>
