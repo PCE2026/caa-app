@@ -139,13 +139,20 @@
       display: inline-block;
     }
 
-    .badge-normal { background-color: #38A169; } /* Verde */
-    .badge-media { background-color: #DD6B20; }  /* Laranja */
-    .badge-alta, .badge-urgente { background-color: #E53E3E; } /* Vermelho */
+    .badge-normal { background-color: #38A169; }
+    .badge-media { background-color: #DD6B20; }
+    .badge-alta, .badge-urgente { background-color: #E53E3E; }
+
+    /* ESTILOS PARA OS ELEMENTOS SOLICITADOS */
+    .ficheiro-box {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background-color: #EDF2F7;
+      border-radius: 6px;
+      font-size: 14px;
+    }
 
     .file-link {
-      display: inline-block;
-      margin-top: 8px;
       color: var(--secondary);
       text-decoration: none;
       font-weight: 600;
@@ -153,6 +160,23 @@
 
     .file-link:hover {
       text-decoration: underline;
+    }
+
+    .btn-copiar {
+      margin-top: 10px;
+      background-color: #4A5568;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-copiar:hover {
+      background-color: #2D3748;
     }
 
     .assumir-box {
@@ -294,6 +318,17 @@
       return 'badge-normal';
     }
 
+    // MODIFICAÇÃO 2: Função para copiar o sumário no formato pedido
+    async function copiarSumario(tipo, entidade, descricao) {
+      const textoSumario = `Tipo de Apoio: ${tipo}\nEntidade / Ano / Turma / Alunos: ${entidade}\nDescrição / Objetivos: ${descricao}`;
+      try {
+        await navigator.clipboard.writeText(textoSumario);
+        alert("Sumário copiado para a área de transferência!");
+      } catch (err) {
+        alert("Erro ao copiar o sumário.");
+      }
+    }
+
     async function carregarNecessidades() {
       const container = document.getElementById('lista-necessidades-prof');
       container.innerHTML = "Carregando pedidos...";
@@ -312,6 +347,11 @@
           const badgeClass = getPriorityClass(item.prioridade);
           const temProf = item.profAssumiu && item.profAssumiu.trim() !== "";
 
+          // Prepara strings seguras para a função de cópia
+          const tipoSafe = (item.tipoValencia || '').replace(/'/g, "\\'");
+          const entidadeSafe = (item.entidadeAlvo || '').replace(/'/g, "\\'");
+          const descrSafe = (item.descricaoObjetivos || '').replace(/'/g, "\\'");
+
           const card = document.createElement('div');
           card.className = 'card';
           card.innerHTML = `
@@ -324,16 +364,26 @@
             <p><strong>Localização:</strong> ${item.localizacao}</p>
             <p><strong>Descrição:</strong> ${item.descricaoObjetivos}</p>
             
-            ${item.urlDocumento && item.urlDocumento.startsWith('http') ? `<p><a href="${item.urlDocumento}" target="_blank" class="file-link">📄 Ver / Transferir Documento Anexo</a></p>` : ''}
-            
-            ${temProf ? `<p style="margin-top:10px; color:#2B6CB0;"><strong>Prof. Responsável:</strong> ${item.profAssumiu}</p>` : ''}
+            <!-- MODIFICAÇÃO 3: Local para aceder ao ficheiro -->
+            <div class="ficheiro-box">
+              <strong>Ficheiro Anexo:</strong> 
+              ${item.urlDocumento && item.urlDocumento.startsWith('http') 
+                ? `<a href="${item.urlDocumento}" target="_blank" class="file-link">📄 Ver / Transferir Documento</a>` 
+                : '<span>Sem documento anexo</span>'}
+            </div>
 
-            ${!temProf ? `
+            <!-- MODIFICAÇÃO 2: Botão para copiar o Sumário -->
+            <div>
+              <button class="btn-copiar" onclick="copiarSumario('${tipoSafe}', '${entidadeSafe}', '${descrSafe}')">📋 Copiar Sumário</button>
+            </div>
+
+            <!-- MODIFICAÇÃO 1: Botão para assumir a tarefa por parte dos professores CAA -->
+            ${temProf ? `<p style="margin-top:12px; color:#2B6CB0;"><strong>Prof. Responsável:</strong> ${item.profAssumiu}</p>` : `
               <div class="assumir-box">
-                <input type="text" id="prof-nome-${item.linhaExcel}" placeholder="O seu nome para assumir o apoio">
-                <button onclick="assumirApoio(${item.linhaExcel})">Assumir Apoio</button>
+                <input type="text" id="prof-nome-${item.linhaExcel}" placeholder="O seu nome para assumir a tarefa">
+                <button onclick="assumirApoio(${item.linhaExcel})">Assumir Tarefa</button>
               </div>
-            ` : ''}
+            `}
           `;
           container.appendChild(card);
         });
@@ -346,7 +396,7 @@
     async function assumirApoio(linhaExcel) {
       const nomeProf = document.getElementById(`prof-nome-${linhaExcel}`).value.trim();
       if (!nomeProf) {
-        alert("Por favor, introduza o seu nome para assumir o apoio.");
+        alert("Por favor, introduza o seu nome para assumir a tarefa.");
         return;
       }
 
@@ -363,7 +413,7 @@
           method: "POST",
           body: JSON.stringify(payload)
         });
-        alert("Apoio assumido com sucesso!");
+        alert("Tarefa assumida com sucesso!");
         carregarNecessidades();
       } catch (e) {
         alert("Erro ao guardar alteração.");
