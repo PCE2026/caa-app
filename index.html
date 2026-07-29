@@ -67,7 +67,30 @@
       color: white;
     }
 
-    .tab-content {
+    .sub-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 10px;
+    }
+
+    .sub-tab-btn {
+      padding: 8px 16px;
+      background-color: #EDF2F7;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .sub-tab-btn.active {
+      background-color: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .tab-content, .sub-tab-content {
       display: none;
       background: var(--card-bg);
       padding: 20px;
@@ -75,7 +98,7 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    .tab-content.active {
+    .tab-content.active, .sub-tab-content.active {
       display: block;
     }
 
@@ -143,10 +166,9 @@
     .badge-media { background-color: #DD6B20; }
     .badge-alta, .badge-urgente { background-color: #E53E3E; }
 
-    /* ESTILOS PARA OS ELEMENTOS SOLICITADOS */
     .ficheiro-box {
       margin-top: 10px;
-      padding: 8px 12px;
+      padding: 10px 14px;
       background-color: #EDF2F7;
       border-radius: 6px;
       font-size: 14px;
@@ -154,12 +176,8 @@
 
     .file-link {
       color: var(--secondary);
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .file-link:hover {
       text-decoration: underline;
+      font-weight: bold;
     }
 
     .btn-copiar {
@@ -172,31 +190,35 @@
       font-weight: bold;
       cursor: pointer;
       font-size: 13px;
-      transition: background-color 0.2s;
     }
 
-    .btn-copiar:hover {
-      background-color: #2D3748;
-    }
-
-    .assumir-box {
+    .assumir-container {
       margin-top: 15px;
+      padding: 12px;
+      background-color: #F7FAFC;
+      border: 1px dashed var(--secondary);
+      border-radius: 6px;
+    }
+
+    .assumir-flex {
       display: flex;
       gap: 10px;
+      margin-top: 8px;
     }
 
-    .assumir-box input {
-      flex: 1;
-    }
-
-    .assumir-box button {
-      padding: 10px 15px;
+    .btn-assumir {
       background-color: var(--success);
       color: white;
       border: none;
+      padding: 10px 16px;
       border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-assumir:hover {
+      background-color: #2F855A;
     }
   </style>
 </head>
@@ -208,89 +230,129 @@
       <p>Apoio Colaborativo aos Docentes</p>
     </header>
 
+    <!-- TABS PRINCIPAIS -->
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('professores')">Área dos Professores CAA</button>
-      <button class="tab-btn" onclick="switchTab('gestao')">Gestão / Coordenação</button>
+      <button class="tab-btn" onclick="switchTab('gestao')">Área de Gestão / Coordenação</button>
     </div>
 
-    <!-- ÁREA DOS PROFESSORES -->
+    <!-- 1. ÁREA DOS PROFESSORES CAA -->
     <div id="professores" class="tab-content active">
       <h2>Necessidades de Apoio Disponíveis</h2>
       <div id="lista-necessidades-prof">Carregando pedidos...</div>
     </div>
 
-    <!-- ÁREA DE GESTÃO -->
+    <!-- 2. ÁREA DE GESTÃO -->
     <div id="gestao" class="tab-content">
-      <h2>Registar Nova Necessidade / Atividade</h2>
-      <form id="form-gestao" onsubmit="submeterNecessidade(event)">
-        <div class="form-group">
-          <label>Tipo de Valência:</label>
-          <select id="tipoValencia" required>
-            <option value="Reforço Pedagógico (DL 54/2018)">Reforço Pedagógico (DL 54/2018)</option>
-            <option value="Apoio Colaborativo aos Docentes">Apoio Colaborativo aos Docentes</option>
-            <option value="Apoio Tutorias">Apoio Tutorias</option>
-            <option value="Apoio à Educação para a Cidadania">Apoio à Educação para a Cidadania</option>
-            <option value="Outro">Outro</option>
-          </select>
-        </div>
+      <div class="sub-tabs">
+        <button class="sub-tab-btn active" onclick="switchSubTab('gestao-criar')">➕ Criar Nova Necessidade</button>
+        <button class="sub-tab-btn" onclick="switchSubTab('gestao-consultar')">📋 Consultar / Gerir Pedidos</button>
+      </div>
 
-        <div class="form-group">
-          <label>Dia da Semana:</label>
-          <select id="diaSemana" required>
-            <option value="2.ª feira">2.ª feira</option>
-            <option value="3.ª feira">3.ª feira</option>
-            <option value="4.ª feira">4.ª feira</option>
-            <option value="5.ª feira">5.ª feira</option>
-            <option value="6.ª feira">6.ª feira</option>
-          </select>
-        </div>
+      <!-- SECTOR 1: CRIAR NOVO PEDIDO -->
+      <div id="gestao-criar" class="sub-tab-content active">
+        <h3>Registar Nova Necessidade ou Atividade</h3>
+        <br>
+        <form id="form-gestao" onsubmit="submeterNecessidade(event)">
+          <div class="form-group">
+            <label>Tipo de Valência:</label>
+            <select id="tipoValencia" required>
+              <option value="Reforço Pedagógico (DL 54/2018)">Reforço Pedagógico (DL 54/2018)</option>
+              <option value="Apoio Colaborativo aos Docentes">Apoio Colaborativo aos Docentes</option>
+              <option value="Apoio Tutorias">Apoio Tutorias</option>
+              <option value="Apoio à Educação para a Cidadania">Apoio à Educação para a Cidadania</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
 
-        <div class="form-group">
-          <label>Tempo Letivo / Horário:</label>
-          <select id="tempoLetivo" required>
-            <option value="Tempo 1 (8h30-9h20)">Tempo 1 (8h30-9h20)</option>
-            <option value="Tempo 2 (9h25-10h15)">Tempo 2 (9h25-10h15)</option>
-            <option value="Tempo 3 (10h30-11h20)">Tempo 3 (10h30-11h20)</option>
-            <option value="Tempo 4 (11h25-12h15)">Tempo 4 (11h25-12h15)</option>
-            <option value="Tempo 5 (12h25-13h15)">Tempo 5 (12h25-13h15)</option>
-            <option value="Tempo 6 (13h30-14h20)">Tempo 6 (13h30-14h20)</option>
-            <option value="Tempo 7 (14h25-15h15)">Tempo 7 (14h25-15h15)</option>
-            <option value="Tempo 8 (15h30-16h20)">Tempo 8 (15h30-16h20)</option>
-          </select>
-        </div>
+          <div class="form-group">
+            <label>Dia da Semana:</label>
+            <select id="diaSemana" required>
+              <option value="2.ª feira">2.ª feira</option>
+              <option value="3.ª feira">3.ª feira</option>
+              <option value="4.ª feira">4.ª feira</option>
+              <option value="5.ª feira">5.ª feira</option>
+              <option value="6.ª feira">6.ª feira</option>
+            </select>
+          </div>
 
-        <div class="form-group">
-          <label>Entidade Alvo / Turma / Alunos:</label>
-          <input type="text" id="entidadeAlvo" placeholder="Ex: 5.º Ano A - Maria Antunes" required>
-        </div>
+          <div class="form-group">
+            <label>Tempo Letivo / Horário:</label>
+            <select id="tempoLetivo" required>
+              <option value="Tempo 1 (8h30-9h20)">Tempo 1 (8h30-9h20)</option>
+              <option value="Tempo 2 (9h25-10h15)">Tempo 2 (9h25-10h15)</option>
+              <option value="Tempo 3 (10h30-11h20)">Tempo 3 (10h30-11h20)</option>
+              <option value="Tempo 4 (11h25-12h15)">Tempo 4 (11h25-12h15)</option>
+              <option value="Tempo 5 (12h25-13h15)">Tempo 5 (12h25-13h15)</option>
+              <option value="Tempo 6 (13h30-14h20)">Tempo 6 (13h30-14h20)</option>
+              <option value="Tempo 7 (14h25-15h15)">Tempo 7 (14h25-15h15)</option>
+              <option value="Tempo 8 (15h30-16h20)">Tempo 8 (15h30-16h20)</option>
+            </select>
+          </div>
 
-        <div class="form-group">
-          <label>Localização / Sala:</label>
-          <input type="text" id="localizacao" placeholder="Ex: Sala CAA 2" required>
-        </div>
+          <!-- ANO DE ESCOLARIDADE (OBRIGATÓRIO) -->
+          <div class="form-group">
+            <label>Ano de Escolaridade *:</label>
+            <select id="anoEscolar" required>
+              <option value="">-- Selecionar Ano --</option>
+              <option value="5.º Ano">5.º Ano</option>
+              <option value="6.º Ano">6.º Ano</option>
+              <option value="7.º Ano">7.º Ano</option>
+              <option value="8.º Ano">8.º Ano</option>
+              <option value="9.º Ano">9.º Ano</option>
+              <option value="10.º Ano">10.º Ano</option>
+              <option value="11.º Ano">11.º Ano</option>
+              <option value="12.º Ano">12.º Ano</option>
+            </select>
+          </div>
 
-        <div class="form-group">
-          <label>Prioridade:</label>
-          <select id="prioridade">
-            <option value="Normal">Normal</option>
-            <option value="Média">Média</option>
-            <option value="Alta">Alta</option>
-            <option value="Urgente">Urgente</option>
-          </select>
-        </div>
+          <!-- TURMA (OBRIGATÓRIO) -->
+          <div class="form-group">
+            <label>Turma *:</label>
+            <input type="text" id="turma" placeholder="Ex: Turma A" required>
+          </div>
 
-        <div class="form-group">
-          <label>Descrição / Objetivos do Apoio:</label>
-          <textarea id="descricaoObjetivos" rows="4" placeholder="Descreva os objetivos do apoio..." required></textarea>
-        </div>
+          <!-- ALUNOS A APOIAR (OPCIONAL) -->
+          <div class="form-group">
+            <label>Aluno(s) a Apoiar (Opcional - pode indicar mais do que um):</label>
+            <input type="text" id="alunosApoiar" placeholder="Ex: Maria Antunes, João Silva">
+          </div>
 
-        <div class="form-group">
-          <label>Anexar Documento / Ficha de Apoio (Opcional):</label>
-          <input type="file" id="ficheiroAnexo">
-        </div>
+          <div class="form-group">
+            <label>Localização / Sala:</label>
+            <input type="text" id="localizacao" placeholder="Ex: Sala CAA 2" required>
+          </div>
 
-        <button type="submit" class="btn-primary" id="btn-submit">Submeter Pedido</button>
-      </form>
+          <div class="form-group">
+            <label>Prioridade:</label>
+            <select id="prioridade">
+              <option value="Normal">Normal</option>
+              <option value="Média">Média</option>
+              <option value="Alta">Alta</option>
+              <option value="Urgente">Urgente</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Descrição / Objetivos do Apoio:</label>
+            <textarea id="descricaoObjetivos" rows="4" placeholder="Descreva os objetivos do apoio..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Anexar Documento / Ficha de Apoio (Opcional):</label>
+            <input type="file" id="ficheiroAnexo">
+          </div>
+
+          <button type="submit" class="btn-primary" id="btn-submit">Submeter Pedido</button>
+        </form>
+      </div>
+
+      <!-- SECTOR 2: CONSULTAR PEDIDOS -->
+      <div id="gestao-consultar" class="sub-tab-content">
+        <h3>Lista de Pedidos Registados</h3>
+        <br>
+        <div id="lista-gestao-consultar">Carregando dados da gestão...</div>
+      </div>
     </div>
   </div>
 
@@ -305,7 +367,21 @@
       event.currentTarget.classList.add('active');
 
       if (tabId === 'professores') {
-        carregarNecessidades();
+        carregarNecessidadesProf();
+      } else if (tabId === 'gestao') {
+        carregarNecessidadesGestao();
+      }
+    }
+
+    function switchSubTab(subTabId) {
+      document.querySelectorAll('.sub-tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.sub-tab-btn').forEach(el => el.classList.remove('active'));
+
+      document.getElementById(subTabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+
+      if (subTabId === 'gestao-consultar') {
+        carregarNecessidadesGestao();
       }
     }
 
@@ -318,18 +394,18 @@
       return 'badge-normal';
     }
 
-    // MODIFICAÇÃO 2: Função para copiar o sumário no formato pedido
     async function copiarSumario(tipo, entidade, descricao) {
       const textoSumario = `Tipo de Apoio: ${tipo}\nEntidade / Ano / Turma / Alunos: ${entidade}\nDescrição / Objetivos: ${descricao}`;
       try {
         await navigator.clipboard.writeText(textoSumario);
-        alert("Sumário copiado para a área de transferência!");
+        alert("Sumário copiado com sucesso!");
       } catch (err) {
         alert("Erro ao copiar o sumário.");
       }
     }
 
-    async function carregarNecessidades() {
+    // CARREGAR LISTA NA ÁREA DOS PROFESSORES CAA
+    async function carregarNecessidadesProf() {
       const container = document.getElementById('lista-necessidades-prof');
       container.innerHTML = "Carregando pedidos...";
 
@@ -338,7 +414,7 @@
         const data = await res.json();
 
         if (!data || data.length === 0) {
-          container.innerHTML = "<p>Não existem registos no momento.</p>";
+          container.innerHTML = "<p>Não existem pedidos registados no momento.</p>";
           return;
         }
 
@@ -347,7 +423,6 @@
           const badgeClass = getPriorityClass(item.prioridade);
           const temProf = item.profAssumiu && item.profAssumiu.trim() !== "";
 
-          // Prepara strings seguras para a função de cópia
           const tipoSafe = (item.tipoValencia || '').replace(/'/g, "\\'");
           const entidadeSafe = (item.entidadeAlvo || '').replace(/'/g, "\\'");
           const descrSafe = (item.descricaoObjetivos || '').replace(/'/g, "\\'");
@@ -356,47 +431,90 @@
           card.className = 'card';
           card.innerHTML = `
             <div class="card-header">
-              <span><strong>${item.idPedido}</strong> - ${item.diaSemana}</span>
+              <span><strong>${item.idPedido || ''}</strong> - ${item.diaSemana}</span>
               <span class="badge ${badgeClass}">${item.prioridade}</span>
             </div>
-            <p><strong>Tempo / Horário:</strong> ${item.tempoLetivo} | <strong>Tipo:</strong> ${item.tipoValencia}</p>
+            <p><strong>Horário:</strong> ${item.tempoLetivo} | <strong>Tipo:</strong> ${item.tipoValencia}</p>
             <p><strong>Entidade / Alunos:</strong> ${item.entidadeAlvo}</p>
             <p><strong>Localização:</strong> ${item.localizacao}</p>
             <p><strong>Descrição:</strong> ${item.descricaoObjetivos}</p>
             
-            <!-- MODIFICAÇÃO 3: Local para aceder ao ficheiro -->
             <div class="ficheiro-box">
               <strong>Ficheiro Anexo:</strong> 
-              ${item.urlDocumento && item.urlDocumento.startsWith('http') 
-                ? `<a href="${item.urlDocumento}" target="_blank" class="file-link">📄 Ver / Transferir Documento</a>` 
+              ${item.urlDocumento && item.urlDocumento.toString().trim().startsWith('http') 
+                ? `<a href="${item.urlDocumento}" target="_blank" class="file-link">📄 Ver ou Transferir Documento</a>` 
                 : '<span>Sem documento anexo</span>'}
             </div>
 
-            <!-- MODIFICAÇÃO 2: Botão para copiar o Sumário -->
             <div>
               <button class="btn-copiar" onclick="copiarSumario('${tipoSafe}', '${entidadeSafe}', '${descrSafe}')">📋 Copiar Sumário</button>
             </div>
 
-            <!-- MODIFICAÇÃO 1: Botão para assumir a tarefa por parte dos professores CAA -->
-            ${temProf ? `<p style="margin-top:12px; color:#2B6CB0;"><strong>Prof. Responsável:</strong> ${item.profAssumiu}</p>` : `
-              <div class="assumir-box">
-                <input type="text" id="prof-nome-${item.linhaExcel}" placeholder="O seu nome para assumir a tarefa">
-                <button onclick="assumirApoio(${item.linhaExcel})">Assumir Tarefa</button>
-              </div>
-            `}
+            <div class="assumir-container">
+              ${temProf 
+                ? `<p style="color:#2B6CB0; font-weight:bold;">✅ Assumido por: ${item.profAssumiu}</p>` 
+                : `
+                  <label for="prof-nome-${item.linhaExcel}">Assumir este apoio:</label>
+                  <div class="assumir-flex">
+                    <input type="text" id="prof-nome-${item.linhaExcel}" placeholder="Escreva aqui o seu nome">
+                    <button class="btn-assumir" onclick="assumirApoio(${item.linhaExcel})">Assumir Apoio</button>
+                  </div>
+                `
+              }
+            </div>
           `;
           container.appendChild(card);
         });
 
       } catch (err) {
-        container.innerHTML = "<p>Erro ao carregar os dados. Por favor, recarregue a página.</p>";
+        container.innerHTML = "<p>Erro ao carregar os dados.</p>";
+      }
+    }
+
+    // CARREGAR LISTA NA ÁREA DE GESTÃO (CONSULTA)
+    async function carregarNecessidadesGestao() {
+      const container = document.getElementById('lista-gestao-consultar');
+      container.innerHTML = "Carregando registos...";
+
+      try {
+        const res = await fetch(SCRIPT_URL + "?action=getNecessidades");
+        const data = await res.json();
+
+        if (!data || data.length === 0) {
+          container.innerHTML = "<p>Sem registos para apresentar.</p>";
+          return;
+        }
+
+        container.innerHTML = "";
+        data.forEach(item => {
+          const badgeClass = getPriorityClass(item.prioridade);
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <div class="card-header">
+              <span><strong>${item.idPedido || ''}</strong> - ${item.diaSemana} (${item.tempoLetivo})</span>
+              <span class="badge ${badgeClass}">${item.prioridade}</span>
+            </div>
+            <p><strong>Tipo:</strong> ${item.tipoValencia}</p>
+            <p><strong>Entidade:</strong> ${item.entidadeAlvo}</p>
+            <p><strong>Docente Responsável:</strong> ${item.profAssumiu ? item.profAssumiu : '<em>Ainda não assumido</em>'}</p>
+            <div class="ficheiro-box">
+              <strong>Anexo:</strong> ${item.urlDocumento && item.urlDocumento.toString().trim().startsWith('http') ? `<a href="${item.urlDocumento}" target="_blank" class="file-link">Ver Documento</a>` : 'Nenhum'}
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      } catch (err) {
+        container.innerHTML = "<p>Erro ao carregar a lista de gestão.</p>";
       }
     }
 
     async function assumirApoio(linhaExcel) {
-      const nomeProf = document.getElementById(`prof-nome-${linhaExcel}`).value.trim();
+      const inputNome = document.getElementById(`prof-nome-${linhaExcel}`);
+      const nomeProf = inputNome ? inputNome.value.trim() : "";
+
       if (!nomeProf) {
-        alert("Por favor, introduza o seu nome para assumir a tarefa.");
+        alert("Por favor, escreva o seu nome antes de clicar em Assumir Apoio.");
         return;
       }
 
@@ -413,10 +531,10 @@
           method: "POST",
           body: JSON.stringify(payload)
         });
-        alert("Tarefa assumida com sucesso!");
-        carregarNecessidades();
+        alert("Apoio assumido com sucesso!");
+        carregarNecessidadesProf();
       } catch (e) {
-        alert("Erro ao guardar alteração.");
+        alert("Erro ao gravar alteração.");
       }
     }
 
@@ -425,6 +543,15 @@
       const btn = document.getElementById('btn-submit');
       btn.innerText = "A guardar...";
       btn.disabled = true;
+
+      const anoVal = document.getElementById('anoEscolar').value;
+      const turmaVal = document.getElementById('turma').value.trim();
+      const alunosVal = document.getElementById('alunosApoiar').value.trim();
+
+      let partesEntidade = [anoVal, turmaVal];
+      if (alunosVal) partesEntidade.push(alunosVal);
+
+      const entidadeFinal = partesEntidade.join(' - ');
 
       const fileInput = document.getElementById('ficheiroAnexo');
       let fileData = null, fileName = null, mimeType = null;
@@ -446,7 +573,7 @@
           tipoValência: document.getElementById('tipoValencia').value,
           diaSemana: document.getElementById('diaSemana').value,
           tempoLetivo: document.getElementById('tempoLetivo').value,
-          entidadeAlvo: document.getElementById('entidadeAlvo').value.trim(),
+          entidadeAlvo: entidadeFinal,
           localizacao: document.getElementById('localizacao').value.trim(),
           prioridade: document.getElementById('prioridade').value,
           descricaoObjetivos: document.getElementById('descricaoObjetivos').value.trim(),
@@ -463,7 +590,7 @@
         });
         alert("Necessidade registada com sucesso!");
         document.getElementById('form-gestao').reset();
-        switchTab('professores');
+        switchSubTab('gestao-consultar');
       } catch (err) {
         alert("Erro ao submeter registo.");
       } finally {
@@ -472,7 +599,8 @@
       }
     }
 
-    carregarNecessidades();
+    // Inicialização
+    carregarNecessidadesProf();
   </script>
 </body>
 </html>
