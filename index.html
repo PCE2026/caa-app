@@ -453,15 +453,15 @@
               <button class="btn-copiar" onclick="copiarSumarioPorIndice(${index})">📋 Copiar Sumário</button>
             </div>
 
-            <!-- CAMPO ONDE O PROFESSOR INTRODUZ O NOME PARA ASSUMIR A TAREFA (COLUNA K NO EXCEL) -->
+            <!-- CAMPO "ASSUMIDO POR:" USADO PARA INSERIR NOME E REGISTAR NA COLUNA K -->
             <div class="assumir-container">
               ${temProf 
                 ? `<p style="color:#2B6CB0; font-weight:bold;">✅ Assumido por: ${item.profAssumiu}</p>` 
                 : `
-                  <label for="prof-nome-${item.linhaExcel}">Assumir esta tarefa (insira o seu nome):</label>
+                  <label for="prof-nome-${item.linhaExcel}">Assumido por (insira o seu nome):</label>
                   <div class="assumir-flex">
-                    <input type="text" id="prof-nome-${item.linhaExcel}" placeholder="Escreva aqui o seu nome">
-                    <button class="btn-assumir" onclick="assumirApoio(${item.linhaExcel})">Assumir Tarefa</button>
+                    <input type="text" id="prof-nome-${item.linhaExcel}" placeholder="Escreva o seu nome...">
+                    <button class="btn-assumir" onclick="assumirApoio(${item.linhaExcel})">Confirmar</button>
                   </div>
                 `
               }
@@ -520,7 +520,7 @@
       const nomeProf = inputNome ? inputNome.value.trim() : "";
 
       if (!nomeProf) {
-        alert("Por favor, escreva o seu nome antes de clicar em Assumir Tarefa.");
+        alert("Por favor, escreva o seu nome antes de confirmar.");
         return;
       }
 
@@ -537,7 +537,7 @@
           method: "POST",
           body: JSON.stringify(payload)
         });
-        alert("Tarefa assumida com sucesso!");
+        alert("Apoio assumido com sucesso!");
         carregarNecessidadesProf();
       } catch (e) {
         alert("Erro ao gravar alteração.");
