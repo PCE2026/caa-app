@@ -276,7 +276,6 @@
             </select>
           </div>
 
-          <!-- TEMPOS LETIVOS CORRIGIDOS -->
           <div class="form-group">
             <label>Tempo Letivo / Horário:</label>
             <select id="tempoLetivo" required>
@@ -454,11 +453,12 @@
               <button class="btn-copiar" onclick="copiarSumarioPorIndice(${index})">📋 Copiar Sumário</button>
             </div>
 
+            <!-- CAMPO PARA O PROFESSOR ESCREVER O NOME E ASSUMIR (REGISTADO NA COLUNA K DO EXCEL) -->
             <div class="assumir-container">
               ${temProf 
                 ? `<p style="color:#2B6CB0; font-weight:bold;">✅ Assumido por: ${item.profAssumiu}</p>` 
                 : `
-                  <label for="prof-nome-${item.linhaExcel}">Assumir este apoio:</label>
+                  <label for="prof-nome-${item.linhaExcel}">Assumir este apoio (insira o seu nome):</label>
                   <div class="assumir-flex">
                     <input type="text" id="prof-nome-${item.linhaExcel}" placeholder="Escreva aqui o seu nome">
                     <button class="btn-assumir" onclick="assumirApoio(${item.linhaExcel})">Assumir Apoio</button>
