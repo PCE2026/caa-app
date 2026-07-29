@@ -213,18 +213,18 @@
         </div>
 
         <div class="form-group">
-          <label>Ano:</label>
-          <input type="text" id="ano" placeholder="Ex: 7º Ano" required>
+          <label>Entidade Alvo:</label>
+          <input type="text" id="entidadeAlvo" placeholder="Ex: Direção de Turma / Grupo de Alunos" required>
         </div>
 
         <div class="form-group">
-          <label>Turma:</label>
-          <input type="text" id="turma" placeholder="Ex: Turma A" required>
+          <label>Ano / Turma:</label>
+          <input type="text" id="anoTurma" placeholder="Ex: 7º A" style="text-transform: uppercase;" required>
         </div>
 
         <div class="form-group">
-          <label>Alunos / Grupo:</label>
-          <input type="text" id="alunos" placeholder="Ex: Grupo de Apoio X / Nome dos alunos" required>
+          <label>Grupo / Alunos:</label>
+          <input type="text" id="grupoAlunos" placeholder="Ex: Nome dos alunos ou grupo específico" required>
         </div>
 
         <div class="form-group">
@@ -257,7 +257,7 @@
   </div>
 
   <script>
-    // URL do teu Google Apps Script
+    // URL do teu Google Apps Script (COLA AQUI O TEU LINK QUE TERMINA EM /exec)
     const SCRIPT_URL = "SUBS_AQUI_O_TEU_URL_DO_APPS_SCRIPT";
 
     function switchTab(tabId) {
@@ -370,10 +370,11 @@
         });
       }
 
-      const ano = document.getElementById('ano').value.trim();
-      const turma = document.getElementById('turma').value.trim();
-      const alunos = document.getElementById('alunos').value.trim();
-      const entidadeAlvoCompleta = `${ano} - ${turma} (${alunos})`;
+      const entidadeInput = document.getElementById('entidadeAlvo').value.trim();
+      const anoTurma = document.getElementById('anoTurma').value.trim().toUpperCase();
+      const grupoAlunos = document.getElementById('grupoAlunos').value.trim();
+      
+      const entidadeAlvoCompleta = `${entidadeInput} (${anoTurma} - ${grupoAlunos})`;
 
       const payload = {
         action: "novaNecessidade",
