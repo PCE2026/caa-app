@@ -130,15 +130,19 @@
       font-weight: bold;
     }
 
+    /* CORES DAS BADGES DE PRIORIDADE */
     .badge {
-      padding: 4px 8px;
+      padding: 4px 10px;
       border-radius: 4px;
-      font-size: 12px;
+      font-size: 13px;
+      font-weight: bold;
       color: white;
+      display: inline-block;
     }
 
-    .badge-pendente { background-color: #DD6B20; }
-    .badge-execucao { background-color: var(--success); }
+    .badge-normal { background-color: #38A169; } /* Verde */
+    .badge-media { background-color: #DD6B20; }  /* Laranja */
+    .badge-alta, .badge-urgente { background-color: #E53E3E; } /* Vermelho */
 
     .file-link {
       display: inline-block;
@@ -150,6 +154,26 @@
 
     .file-link:hover {
       text-decoration: underline;
+    }
+
+    .assumir-box {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .assumir-box input {
+      flex: 1;
+    }
+
+    .assumir-box button {
+      padding: 10px 15px;
+      background-color: var(--success);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -189,26 +213,25 @@
         <div class="form-group">
           <label>Dia da Semana:</label>
           <select id="diaSemana" required>
-            <option value="Segunda-feira">Segunda-feira</option>
-            <option value="Terça-feira">Terça-feira</option>
-            <option value="Quarta-feira">Quarta-feira</option>
-            <option value="Quinta-feira">Quinta-feira</option>
-            <option value="Sexta-feira">Sexta-feira</option>
+            <option value="2.ª feira">2.ª feira</option>
+            <option value="3.ª feira">3.ª feira</option>
+            <option value="4.ª feira">4.ª feira</option>
+            <option value="5.ª feira">5.ª feira</option>
+            <option value="6.ª feira">6.ª feira</option>
           </select>
         </div>
 
         <div class="form-group">
           <label>Tempo Letivo / Horário:</label>
           <select id="tempoLetivo" required>
-            <option value="1º Tempo (08:25 - 09:15)">1º Tempo (08:25 - 09:15)</option>
-            <option value="2º Tempo (09:25 - 10:15)">2º Tempo (09:25 - 10:15)</option>
-            <option value="3º Tempo (10:30 - 11:20)">3º Tempo (10:30 - 11:20)</option>
-            <option value="4º Tempo (11:30 - 12:20)">4º Tempo (11:30 - 12:20)</option>
-            <option value="5º Tempo (12:25 - 13:15)">5º Tempo (12:25 - 13:15)</option>
-            <option value="6º Tempo (13:30 - 14:20)">6º Tempo (13:30 - 14:20)</option>
-            <option value="7º Tempo (14:25 - 15:15)">7º Tempo (14:25 - 15:15)</option>
-            <option value="8º Tempo (15:30 - 16:20)">8º Tempo (15:30 - 16:20)</option>
-            <option value="9º Tempo (16:25 - 17:15)">9º Tempo (16:25 - 17:15)</option>
+            <option value="Tempo 1 (8h30-9h20)">Tempo 1 (8h30-9h20)</option>
+            <option value="Tempo 2 (9h25-10h15)">Tempo 2 (9h25-10h15)</option>
+            <option value="Tempo 3 (10h30-11h20)">Tempo 3 (10h30-11h20)</option>
+            <option value="Tempo 4 (11h30-12h20)">Tempo 4 (11h30-12h20)</option>
+            <option value="Tempo 5 (12h25-13h15)">Tempo 5 (12h25-13h15)</option>
+            <option value="Tempo 6 (13h30-14h20)">Tempo 6 (13h30-14h20)</option>
+            <option value="Tempo 7 (14h25-15h15)">Tempo 7 (14h25-15h15)</option>
+            <option value="Tempo 8 (15h30-16h20)">Tempo 8 (15h30-16h20)</option>
           </select>
         </div>
 
@@ -219,7 +242,7 @@
 
         <div class="form-group">
           <label>Ano / Turma:</label>
-          <input type="text" id="anoTurma" placeholder="Ex: 7º A" style="text-transform: uppercase;" required>
+          <input type="text" id="anoTurma" placeholder="Ex: 7.º A" required>
         </div>
 
         <div class="form-group">
@@ -236,6 +259,7 @@
           <label>Prioridade:</label>
           <select id="prioridade">
             <option value="Normal">Normal</option>
+            <option value="Média">Média</option>
             <option value="Alta">Alta</option>
             <option value="Urgente">Urgente</option>
           </select>
@@ -257,7 +281,6 @@
   </div>
 
   <script>
-    // URL do teu Google Apps Script configurado
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTM3Ps2cD5SSNYhNkxMbEWDMPWfOikrVKp48lhY9HVHa7nbM7J0nsg06yial7jZ_zz/exec";
 
     function switchTab(tabId) {
@@ -272,6 +295,15 @@
       }
     }
 
+    function getPriorityClass(priority) {
+      if (!priority) return 'badge-normal';
+      const p = priority.toString().toLowerCase().trim();
+      if (p.includes('média') || p.includes('media')) return 'badge-media';
+      if (p.includes('alta')) return 'badge-alta';
+      if (p.includes('urgente')) return 'badge-urgente';
+      return 'badge-normal';
+    }
+
     async function carregarNecessidades() {
       const container = document.getElementById('lista-necessidades-prof');
       container.innerHTML = "Carregando pedidos...";
@@ -280,35 +312,49 @@
         const res = await fetch(SCRIPT_URL + "?action=getNecessidades");
         const data = await res.json();
 
-        if (data.length === 0) {
+        if (!data || data.length === 0) {
           container.innerHTML = "<p>Não existem registos no momento.</p>";
           return;
         }
 
         container.innerHTML = "";
         data.forEach(item => {
-          const isPendente = item.estado === "Pendente";
+          // Ajuste fino do mapeamento dos campos
+          const idPed = item.tipoValência || "REQ-SemID";
+          const dia = item.diaSemana || "N/D";
+          const tipoVal = item.tempoLetivo || "N/D";
+          const tempoHorario = item.localizacao || "N/D";
+          const entidadeEAlunos = item.prioridade || "N/D";
+          const descr = item.descricaoObjetivos || "";
+          const urlDoc = item.urlDocumento || item.profAssumiu || ""; 
+          const profResp = item.estado || "";
+          
+          // Classificação de prioridade visual
+          const prioridadeTexto = item.entidadeAlvo || "Normal";
+          const badgeClass = getPriorityClass(prioridadeTexto);
+
+          // Verifica se o apoio já foi assumido
+          const temProfessorAssumido = profResp && profResp !== "Pendente" && profResp !== "";
 
           const card = document.createElement('div');
           card.className = 'card';
           card.innerHTML = `
             <div class="card-header">
-              <span>${item.tipoValência} - ${item.entidadeAlvo}</span>
-              <span class="badge ${isPendente ? 'badge-pendente' : 'badge-execucao'}">${item.estado}</span>
+              <span><strong>${idPed}</strong> - ${dia}</span>
+              <span class="badge ${badgeClass}">${prioridadeTexto}</span>
             </div>
-            <p><strong>Dia:</strong> ${item.diaSemana} | <strong>Tempo:</strong> ${item.tempoLetivo}</p>
-            <p><strong>Local:</strong> ${item.localizacao}</p>
-            <p><strong>Prioridade:</strong> ${item.prioridade}</p>
-            <p><strong>Descrição:</strong> ${item.descricaoObjetivos}</p>
+            <p><strong>Tempo / Horário:</strong> ${tempoHorario} | <strong>Tipo:</strong> ${tipoVal}</p>
+            <p><strong>Entidade / Alunos:</strong> ${entidadeEAlunos}</p>
+            <p><strong>Descrição:</strong> ${descr}</p>
             
-            ${item.urlDocumento ? `<p><a href="${item.urlDocumento}" target="_blank" class="file-link">📄 Ver / Transferir Documento Anexo</a></p>` : ''}
+            ${urlDoc && urlDoc.startsWith('http') ? `<p><a href="${urlDoc}" target="_blank" class="file-link">📄 Ver / Transferir Documento Anexo</a></p>` : ''}
             
-            ${!isPendente ? `<p style="margin-top:8px;"><strong>Prof. Responsável:</strong> ${item.profAssumiu}</p>` : ''}
+            ${temProfessorAssumido ? `<p style="margin-top:10px; color:#2B6CB0;"><strong>Prof. Responsável:</strong> ${profResp}</p>` : ''}
 
-            ${isPendente ? `
-              <div style="margin-top: 15px;">
-                <input type="text" id="prof-nome-${item.linhaExcel}" placeholder="O seu nome" style="width:70%; display:inline-block;">
-                <button onclick="assumirApoio(${item.linhaExcel})" style="width:28%; padding:10px; background-color:var(--success); color:white; border:none; border-radius:6px; cursor:pointer;">Assumir</button>
+            ${!temProfessorAssumido ? `
+              <div class="assumir-box">
+                <input type="text" id="prof-nome-${item.linhaExcel}" placeholder="O seu nome para assumir o apoio">
+                <button onclick="assumirApoio(${item.linhaExcel})">Assumir Apoio</button>
               </div>
             ` : ''}
           `;
@@ -316,7 +362,7 @@
         });
 
       } catch (err) {
-        container.innerHTML = "<p>Erro ao carregar os dados. Verifique a ligação ao script.</p>";
+        container.innerHTML = "<p>Erro ao carregar os dados. Por favor, tente novamente.</p>";
       }
     }
 
@@ -331,8 +377,7 @@
         action: "assumirApoio",
         payload: {
           linhaExcel: linhaExcel,
-          nomeProfessor: nomeProf,
-          dataAssumido: new Date().toLocaleString('pt-PT')
+          nomeProfessor: nomeProf
         }
       };
 
@@ -371,9 +416,8 @@
       }
 
       const entidadeInput = document.getElementById('entidadeAlvo').value.trim();
-      const anoTurma = document.getElementById('anoTurma').value.trim().toUpperCase();
+      const anoTurma = document.getElementById('anoTurma').value.trim();
       const grupoAlunos = document.getElementById('grupoAlunos').value.trim();
-      
       const entidadeAlvoCompleta = `${entidadeInput} (${anoTurma} - ${grupoAlunos})`;
 
       const payload = {
