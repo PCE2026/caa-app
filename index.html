@@ -200,13 +200,34 @@
       border-radius: 6px;
     }
 
+    .btn-assumir-inicio {
+      background-color: var(--secondary);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      font-size: 14px;
+    }
+
+    .btn-assumir-inicio:hover {
+      background-color: #2C5282;
+    }
+
+    .assumir-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
     .assumir-flex {
       display: flex;
       gap: 10px;
-      margin-top: 8px;
     }
 
-    .btn-assumir {
+    .btn-assumir-confirmar {
       background-color: var(--success);
       color: white;
       border: none;
@@ -217,7 +238,7 @@
       white-space: nowrap;
     }
 
-    .btn-assumir:hover {
+    .btn-assumir-confirmar:hover {
       background-color: #2F855A;
     }
   </style>
@@ -410,6 +431,26 @@
       });
     }
 
+    function mostrarFormAssumir(linhaExcel) {
+      const box = document.getElementById(`box-assumir-${linhaExcel}`);
+      if (box) {
+        box.innerHTML = `
+          <div class="assumir-form">
+            <label for="prof-nome-${linhaExcel}">Assumido por (insira o seu nome):</label>
+            <div class="assumir-flex">
+              <input type="text" id="prof-nome-${linhaExcel}" placeholder="Escreva o seu nome aqui..." autocomplete="off">
+              <button class="btn-assumir-confirmar" onclick="assumirApoio(${linhaExcel})">Confirmar</button>
+            </div>
+          </div>
+        `;
+        // Focar automaticamente no campo de texto
+        setTimeout(() => {
+          const input = document.getElementById(`prof-nome-${linhaExcel}`);
+          if (input) input.focus();
+        }, 50);
+      }
+    }
+
     // CARREGAR LISTA NA ÁREA DOS PROFESSORES CAA
     async function carregarNecessidadesProf() {
       const container = document.getElementById('lista-necessidades-prof');
@@ -453,17 +494,11 @@
               <button class="btn-copiar" onclick="copiarSumarioPorIndice(${index})">📋 Copiar Sumário</button>
             </div>
 
-            <!-- CAMPO "ASSUMIDO POR:" USADO PARA INSERIR NOME E REGISTAR NA COLUNA K -->
-            <div class="assumir-container">
+            <!-- ÁREA PARA ASSUMIR A TAREFA -->
+            <div class="assumir-container" id="box-assumir-${item.linhaExcel}">
               ${temProf 
                 ? `<p style="color:#2B6CB0; font-weight:bold;">✅ Assumido por: ${item.profAssumiu}</p>` 
-                : `
-                  <label for="prof-nome-${item.linhaExcel}">Assumido por (insira o seu nome):</label>
-                  <div class="assumir-flex">
-                    <input type="text" id="prof-nome-${item.linhaExcel}" placeholder="Escreva o seu nome...">
-                    <button class="btn-assumir" onclick="assumirApoio(${item.linhaExcel})">Confirmar</button>
-                  </div>
-                `
+                : `<button class="btn-assumir-inicio" onclick="mostrarFormAssumir(${item.linhaExcel})">✋ Assumir esta Tarefa / Apoio</button>`
               }
             </div>
           `;
