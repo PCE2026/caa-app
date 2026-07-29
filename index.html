@@ -232,8 +232,8 @@
 
     <!-- TABS PRINCIPAIS -->
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('professores')">Área dos Professores CAA</button>
-      <button class="tab-btn" onclick="switchTab('gestao')">Área de Gestão / Coordenação</button>
+      <button class="tab-btn active" onclick="switchTab('professores', event)">Área dos Professores CAA</button>
+      <button class="tab-btn" onclick="switchTab('gestao', event)">Gestão / Coordenação</button>
     </div>
 
     <!-- 1. ÁREA DOS PROFESSORES CAA -->
@@ -245,8 +245,8 @@
     <!-- 2. ÁREA DE GESTÃO -->
     <div id="gestao" class="tab-content">
       <div class="sub-tabs">
-        <button class="sub-tab-btn active" onclick="switchSubTab('gestao-criar')">➕ Criar Nova Necessidade</button>
-        <button class="sub-tab-btn" onclick="switchSubTab('gestao-consultar')">📋 Consultar / Gerir Pedidos</button>
+        <button class="sub-tab-btn active" onclick="switchSubTab('gestao-criar', event)">➕ Criar Nova Necessidade</button>
+        <button class="sub-tab-btn" onclick="switchSubTab('gestao-consultar', event)">📋 Consultar / Gerir Pedidos</button>
       </div>
 
       <!-- SECTOR 1: CRIAR NOVO PEDIDO -->
@@ -276,21 +276,23 @@
             </select>
           </div>
 
+          <!-- TEMPOS LETIVOS CORRIGIDOS -->
           <div class="form-group">
             <label>Tempo Letivo / Horário:</label>
             <select id="tempoLetivo" required>
-              <option value="Tempo 1 (8h30-9h20)">Tempo 1 (8h30-9h20)</option>
-              <option value="Tempo 2 (9h25-10h15)">Tempo 2 (9h25-10h15)</option>
-              <option value="Tempo 3 (10h30-11h20)">Tempo 3 (10h30-11h20)</option>
-              <option value="Tempo 4 (11h25-12h15)">Tempo 4 (11h25-12h15)</option>
-              <option value="Tempo 5 (12h25-13h15)">Tempo 5 (12h25-13h15)</option>
-              <option value="Tempo 6 (13h30-14h20)">Tempo 6 (13h30-14h20)</option>
-              <option value="Tempo 7 (14h25-15h15)">Tempo 7 (14h25-15h15)</option>
-              <option value="Tempo 8 (15h30-16h20)">Tempo 8 (15h30-16h20)</option>
+              <option value="1 - 8h30 - 9h20">1 - 8h30 - 9h20</option>
+              <option value="2 - 9h30 - 10h20">2 - 9h30 - 10h20</option>
+              <option value="3 - 10h40 - 11h30">3 - 10h40 - 11h30</option>
+              <option value="4 - 11h40 - 12h30">4 - 11h40 - 12h30</option>
+              <option value="5 - 12h40 - 13h30">5 - 12h40 - 13h30</option>
+              <option value="6 - 13h30 - 14h30">6 - 13h30 - 14h30</option>
+              <option value="7 - 14h30 - 15h20">7 - 14h30 - 15h20</option>
+              <option value="8 - 15h35 - 16h25">8 - 15h35 - 16h25</option>
+              <option value="9 - 16h35 - 17h25">9 - 16h35 - 17h25</option>
+              <option value="10 - 17h35 - 18h25">10 - 17h35 - 18h25</option>
             </select>
           </div>
 
-          <!-- ANO DE ESCOLARIDADE (OBRIGATÓRIO) -->
           <div class="form-group">
             <label>Ano de Escolaridade *:</label>
             <select id="anoEscolar" required>
@@ -306,13 +308,11 @@
             </select>
           </div>
 
-          <!-- TURMA (OBRIGATÓRIO) -->
           <div class="form-group">
             <label>Turma *:</label>
             <input type="text" id="turma" placeholder="Ex: Turma A" required>
           </div>
 
-          <!-- ALUNOS A APOIAR (OPCIONAL) -->
           <div class="form-group">
             <label>Aluno(s) a Apoiar (Opcional - pode indicar mais do que um):</label>
             <input type="text" id="alunosApoiar" placeholder="Ex: Maria Antunes, João Silva">
@@ -358,13 +358,16 @@
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTM3Ps2cD5SSNYhNkxMbEWDMPWfOikrVKp48lhY9HVHa7nbM7J0nsg06yial7jZ_zz/exec";
+    let globalData = [];
 
-    function switchTab(tabId) {
+    function switchTab(tabId, event) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
       
       document.getElementById(tabId).classList.add('active');
-      event.currentTarget.classList.add('active');
+      if (event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+      }
 
       if (tabId === 'professores') {
         carregarNecessidadesProf();
@@ -373,12 +376,14 @@
       }
     }
 
-    function switchSubTab(subTabId) {
+    function switchSubTab(subTabId, event) {
       document.querySelectorAll('.sub-tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.sub-tab-btn').forEach(el => el.classList.remove('active'));
 
       document.getElementById(subTabId).classList.add('active');
-      event.currentTarget.classList.add('active');
+      if (event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+      }
 
       if (subTabId === 'gestao-consultar') {
         carregarNecessidadesGestao();
@@ -394,14 +399,16 @@
       return 'badge-normal';
     }
 
-    async function copiarSumario(tipo, entidade, descricao) {
-      const textoSumario = `Tipo de Apoio: ${tipo}\nEntidade / Ano / Turma / Alunos: ${entidade}\nDescrição / Objetivos: ${descricao}`;
-      try {
-        await navigator.clipboard.writeText(textoSumario);
+    function copiarSumarioPorIndice(index) {
+      const item = globalData[index];
+      if (!item) return;
+      const textoSumario = `Tipo de Apoio: ${item.tipoValencia || ''}\nEntidade / Ano / Turma / Alunos: ${item.entidadeAlvo || ''}\nDescrição / Objetivos: ${item.descricaoObjetivos || ''}`;
+      
+      navigator.clipboard.writeText(textoSumario).then(() => {
         alert("Sumário copiado com sucesso!");
-      } catch (err) {
+      }).catch(() => {
         alert("Erro ao copiar o sumário.");
-      }
+      });
     }
 
     // CARREGAR LISTA NA ÁREA DOS PROFESSORES CAA
@@ -412,6 +419,7 @@
       try {
         const res = await fetch(SCRIPT_URL + "?action=getNecessidades");
         const data = await res.json();
+        globalData = data || [];
 
         if (!data || data.length === 0) {
           container.innerHTML = "<p>Não existem pedidos registados no momento.</p>";
@@ -419,25 +427,21 @@
         }
 
         container.innerHTML = "";
-        data.forEach(item => {
+        data.forEach((item, index) => {
           const badgeClass = getPriorityClass(item.prioridade);
-          const temProf = item.profAssumiu && item.profAssumiu.trim() !== "";
-
-          const tipoSafe = (item.tipoValencia || '').replace(/'/g, "\\'");
-          const entidadeSafe = (item.entidadeAlvo || '').replace(/'/g, "\\'");
-          const descrSafe = (item.descricaoObjetivos || '').replace(/'/g, "\\'");
+          const temProf = item.profAssumiu && item.profAssumiu.toString().trim() !== "";
 
           const card = document.createElement('div');
           card.className = 'card';
           card.innerHTML = `
             <div class="card-header">
-              <span><strong>${item.idPedido || ''}</strong> - ${item.diaSemana}</span>
-              <span class="badge ${badgeClass}">${item.prioridade}</span>
+              <span><strong>${item.idPedido || ''}</strong> - ${item.diaSemana || ''}</span>
+              <span class="badge ${badgeClass}">${item.prioridade || 'Normal'}</span>
             </div>
-            <p><strong>Horário:</strong> ${item.tempoLetivo} | <strong>Tipo:</strong> ${item.tipoValencia}</p>
-            <p><strong>Entidade / Alunos:</strong> ${item.entidadeAlvo}</p>
-            <p><strong>Localização:</strong> ${item.localizacao}</p>
-            <p><strong>Descrição:</strong> ${item.descricaoObjetivos}</p>
+            <p><strong>Horário:</strong> ${item.tempoLetivo || ''} | <strong>Tipo:</strong> ${item.tipoValencia || ''}</p>
+            <p><strong>Entidade / Alunos:</strong> ${item.entidadeAlvo || ''}</p>
+            <p><strong>Localização:</strong> ${item.localizacao || ''}</p>
+            <p><strong>Descrição:</strong> ${item.descricaoObjetivos || ''}</p>
             
             <div class="ficheiro-box">
               <strong>Ficheiro Anexo:</strong> 
@@ -447,7 +451,7 @@
             </div>
 
             <div>
-              <button class="btn-copiar" onclick="copiarSumario('${tipoSafe}', '${entidadeSafe}', '${descrSafe}')">📋 Copiar Sumário</button>
+              <button class="btn-copiar" onclick="copiarSumarioPorIndice(${index})">📋 Copiar Sumário</button>
             </div>
 
             <div class="assumir-container">
@@ -467,7 +471,8 @@
         });
 
       } catch (err) {
-        container.innerHTML = "<p>Erro ao carregar os dados.</p>";
+        console.error("Erro ao carregar os dados:", err);
+        container.innerHTML = "<p>Erro ao carregar os dados. Por favor, recarregue a página.</p>";
       }
     }
 
@@ -492,11 +497,11 @@
           card.className = 'card';
           card.innerHTML = `
             <div class="card-header">
-              <span><strong>${item.idPedido || ''}</strong> - ${item.diaSemana} (${item.tempoLetivo})</span>
-              <span class="badge ${badgeClass}">${item.prioridade}</span>
+              <span><strong>${item.idPedido || ''}</strong> - ${item.diaSemana || ''} (${item.tempoLetivo || ''})</span>
+              <span class="badge ${badgeClass}">${item.prioridade || 'Normal'}</span>
             </div>
-            <p><strong>Tipo:</strong> ${item.tipoValencia}</p>
-            <p><strong>Entidade:</strong> ${item.entidadeAlvo}</p>
+            <p><strong>Tipo:</strong> ${item.tipoValencia || ''}</p>
+            <p><strong>Entidade:</strong> ${item.entidadeAlvo || ''}</p>
             <p><strong>Docente Responsável:</strong> ${item.profAssumiu ? item.profAssumiu : '<em>Ainda não assumido</em>'}</p>
             <div class="ficheiro-box">
               <strong>Anexo:</strong> ${item.urlDocumento && item.urlDocumento.toString().trim().startsWith('http') ? `<a href="${item.urlDocumento}" target="_blank" class="file-link">Ver Documento</a>` : 'Nenhum'}
@@ -505,6 +510,7 @@
           container.appendChild(card);
         });
       } catch (err) {
+        console.error("Erro ao carregar gestão:", err);
         container.innerHTML = "<p>Erro ao carregar a lista de gestão.</p>";
       }
     }
