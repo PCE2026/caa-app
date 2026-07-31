@@ -475,12 +475,40 @@
           return;
         }
 
-        container.innerHTML = "";
-        data.forEach((item, index) => {
-          const badgeClass = getPriorityClass(item.prioridade);
-          
+        // Data atual (sem horas) para comparação
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+
+        // Filtra apenas tarefas não alocadas e cuja data de fim ainda não passou
+        const tarefasDisponiveis = data.filter(item => {
           const valProf = item.profAssumiu ? item.profAssumiu.toString().trim() : "";
           const temProf = valProf !== "" && valProf.toLowerCase() !== "pendente";
+          
+          // Se já tem professor alocado, ignora
+          if (temProf) return false;
+
+          // Validação da data de fim
+          if (item.dataFim && item.dataFim !== "Até ao final do ano letivo") {
+            const dataFim = new Date(item.dataFim);
+            if (!isNaN(dataFim.getTime())) {
+              dataFim.setHours(0, 0, 0, 0);
+              // Se a data de fim for anterior a hoje, ignora
+              if (dataFim < hoje) return false;
+            }
+          }
+
+          return true;
+        });
+
+        if (tarefasDisponiveis.length === 0) {
+          container.innerHTML = "<p>Não existem necessidades de apoio disponíveis de momento.</p>";
+          return;
+        }
+
+        container.innerHTML = "";
+        tarefasDisponiveis.forEach((item) => {
+          const indexOriginal = data.indexOf(item);
+          const badgeClass = getPriorityClass(item.prioridade);
 
           const card = document.createElement('div');
           card.className = 'card';
@@ -503,15 +531,12 @@
             </div>
 
             <div>
-              <button class="btn-copiar" onclick="copiarSumarioPorIndice(${index})">📋 Copiar Sumário</button>
+              <button class="btn-copiar" onclick="copiarSumarioPorIndice(${indexOriginal})">📋 Copiar Sumário</button>
             </div>
 
             <!-- ÁREA PARA ASSUMIR A TAREFA -->
             <div class="assumir-container" id="box-assumir-${item.linhaExcel}">
-              ${temProf 
-                ? `<p style="color:#2B6CB0; font-weight:bold;">✅ Assumido por: ${item.profAssumiu}</p>` 
-                : `<button class="btn-assumir-inicio" onclick="mostrarFormAssumir(${item.linhaExcel})">✋ Assumir esta Tarefa / Apoio</button>`
-              }
+              <button class="btn-assumir-inicio" onclick="mostrarFormAssumir(${item.linhaExcel})">✋ Assumir esta Tarefa / Apoio</button>
             </div>
           `;
           container.appendChild(card);
