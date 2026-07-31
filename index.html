@@ -38,29 +38,16 @@
     header {
       background-color: var(--primary);
       color: white;
-      padding: 20px;
+      padding: 25px 20px;
       border-radius: 8px;
       margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-    }
-
-    .header-logo {
-      height: 65px;
-      width: auto;
-      object-fit: contain;
-      border-radius: 4px;
-    }
-
-    .header-text {
       text-align: center;
     }
 
     .header-text h1 {
       font-size: 24px;
       margin-bottom: 4px;
+      font-weight: 700;
     }
 
     .header-text p {
@@ -271,13 +258,6 @@
 
   <div class="container">
     <header>
-      <!-- Tenta carregar o ficheiro no repositório. Se falhar, tenta com url-encode para gerir os espaços -->
-      <img id="logo-img" 
-           src="./1000 - Mosca.jpg" 
-           alt="Logótipo Agrupamento de Escolas Templários" 
-           class="header-logo"
-           onerror="this.onerror=null; this.src='./1000%20-%20Mosca.jpg';">
-      
       <div class="header-text">
         <h1>Agrupamento de Escolas Templários</h1>
         <p>Centro de Apoio à Aprendizagem (CAA)</p>
