@@ -287,6 +287,16 @@
           </div>
 
           <div class="form-group">
+            <label>Data de Início do Apoio *:</label>
+            <input type="date" id="dataInicio" required>
+          </div>
+
+          <div class="form-group">
+            <label>Data de Fim do Apoio (Opcional - se em branco, considera-se até ao fim do ano letivo):</label>
+            <input type="date" id="dataFim">
+          </div>
+
+          <div class="form-group">
             <label>Dia da Semana:</label>
             <select id="diaSemana" required>
               <option value="2.ª feira">2.ª feira</option>
@@ -469,7 +479,6 @@
         data.forEach((item, index) => {
           const badgeClass = getPriorityClass(item.prioridade);
           
-          // CORREÇÃO DA VALIDAÇÃO: Ignora se for vazio, nulo ou "Pendente"
           const valProf = item.profAssumiu ? item.profAssumiu.toString().trim() : "";
           const temProf = valProf !== "" && valProf.toLowerCase() !== "pendente";
 
@@ -481,6 +490,7 @@
               <span class="badge ${badgeClass}">${item.prioridade || 'Normal'}</span>
             </div>
             <p><strong>Horário:</strong> ${item.tempoLetivo || ''} | <strong>Tipo:</strong> ${item.tipoValencia || ''}</p>
+            <p><strong>Duração:</strong> De ${item.dataInicio || 'N/A'} a ${item.dataFim || 'Até ao final do ano letivo'}</p>
             <p><strong>Entidade / Alunos:</strong> ${item.entidadeAlvo || ''}</p>
             <p><strong>Localização:</strong> ${item.localizacao || ''}</p>
             <p><strong>Descrição:</strong> ${item.descricaoObjetivos || ''}</p>
@@ -541,6 +551,7 @@
               <span class="badge ${badgeClass}">${item.prioridade || 'Normal'}</span>
             </div>
             <p><strong>Tipo:</strong> ${item.tipoValencia || ''}</p>
+            <p><strong>Duração:</strong> De ${item.dataInicio || 'N/A'} a ${item.dataFim || 'Até ao final do ano letivo'}</p>
             <p><strong>Entidade:</strong> ${item.entidadeAlvo || ''}</p>
             <p><strong>Docente Responsável:</strong> ${temProf ? item.profAssumiu : '<em>Ainda não assumido</em>'}</p>
             <div class="ficheiro-box">
@@ -613,6 +624,9 @@
         });
       }
 
+      const dataFimInput = document.getElementById('dataFim').value;
+      const dataFimFinal = dataFimInput ? dataFimInput : "Até ao final do ano letivo";
+
       const payload = {
         action: "novaNecessidade",
         payload: {
@@ -623,6 +637,8 @@
           localizacao: document.getElementById('localizacao').value.trim(),
           prioridade: document.getElementById('prioridade').value,
           descricaoObjetivos: document.getElementById('descricaoObjetivos').value.trim(),
+          dataInicio: document.getElementById('dataInicio').value,
+          dataFim: dataFimFinal,
           fileData: fileData,
           fileName: fileName,
           mimeType: mimeType
