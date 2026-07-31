@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Centro de Apoio à Aprendizagem (CAA)</title>
+  <title>Agrupamento de Escolas Templários</title>
   <style>
     :root {
       --primary: #1A365D;
@@ -41,7 +41,30 @@
       padding: 20px;
       border-radius: 8px;
       margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .header-logo {
+      height: 60px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .header-text {
       text-align: center;
+    }
+
+    .header-text h1 {
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+
+    .header-text p {
+      font-size: 15px;
+      opacity: 0.9;
     }
 
     .tabs {
@@ -247,8 +270,11 @@
 
   <div class="container">
     <header>
-      <h1>Centro de Apoio à Aprendizagem (CAA)</h1>
-      <p>Apoio Colaborativo aos Docentes</p>
+      <img src="1000 - Mosca.jpg" alt="Logótipo Agrupamento de Escolas Templários" class="header-logo">
+      <div class="header-text">
+        <h1>Agrupamento de Escolas Templários</h1>
+        <p>Centro de Apoio à Aprendizagem (CAA)</p>
+      </div>
     </header>
 
     <!-- TABS PRINCIPAIS -->
